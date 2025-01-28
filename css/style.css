@@ -137,7 +137,7 @@ label {
     color: #444;
 }
 
-input, select {
+input, select, textarea {
     width: 100%;
     padding: 12px;
     margin-bottom: 20px;
@@ -147,7 +147,12 @@ input, select {
     box-sizing: border-box;
 }
 
-input:focus, select:focus {
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+input:focus, select:focus, textarea:focus {
     border-color: #045a81;
     outline: none;
     box-shadow: 0 0 5px rgba(4, 90, 129, 0.3);
@@ -185,6 +190,11 @@ button:disabled {
     font-size: 12px;
     margin-top: -15px;
     margin-bottom: 15px;
+}
+
+.error-input {
+    border-color: #dc3545;
+    background-color: #fff8f8;
 }
 
 /* Payment Calculator Styles */
@@ -247,4 +257,25 @@ button:disabled {
 /* Google Places Autocomplete */
 .pac-container {
     z-index: 1051 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .loan-widget {
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    .button-container button {
+        margin: 5px 0;
+    }
 }
