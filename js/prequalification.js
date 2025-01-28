@@ -5,6 +5,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressText = document.querySelector('.progress-text');
     let currentSection = 0;
 
+    // Check for loan amount in URL and redirect if not present
+    const urlParams = new URLSearchParams(window.location.search);
+    const loanAmount = urlParams.get('amount');
+    
+    if (!loanAmount) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Format and set the loan amount
+    const formattedAmount = parseInt(loanAmount).toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    
+    document.getElementById('00NHs00000lzslH').value = formattedAmount;
+
     // Initialize Google Places Autocomplete
     const autocomplete = new google.maps.places.Autocomplete(
         document.getElementById('autocomplete'),
@@ -20,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let state = '';
         let zipCode = '';
 
-        // Extract address components
+        // Parse address components
         for (const component of place.address_components) {
             const type = component.types[0];
             switch (type) {
@@ -49,8 +68,42 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('zip').value = zipCode;
     });
 
+    // Handle loan purpose selection
+    const loanPurpose = document.getElementById('00NHs00000scaqg');
+    const otherPurpose = document.getElementById('other-purpose');
+    const otherPurposeText = document.getElementById('00NQP000003JB1F');
+
+    loanPurpose.addEventListener('change', function() {
+        const isOther = this.value === 'Other';
+        otherPurpose.classList.toggle('hidden', !isOther);
+        
+        if (isOther) {
+            otherPurposeText.setAttribute('required', 'required');
+        } else {
+            otherPurposeText.removeAttribute('required');
+            otherPurposeText.value = '';
+        }
+    });
+
+    // Handle business established selection
+    const businessEstablished = document.getElementById('00NHs00000lzslM');
+    const yearsContainer = document.getElementById('years-container');
+    const yearsInput = document.getElementById('00NHs00000m08cv');
+
+    businessEstablished.addEventListener('change', function() {
+        const isEstablished = this.value === 'Yes';
+        yearsContainer.classList.toggle('hidden', !isEstablished);
+        
+        if (isEstablished) {
+            yearsInput.setAttribute('required', 'required');
+        } else {
+            yearsInput.removeAttribute('required');
+            yearsInput.value = '';
+        }
+    });
+
     // Format currency inputs
-    const currencyInputs = document.querySelectorAll('.currency');
+    const currencyInputs = document.querySelectorAll('.currency:not([readonly])');
     currencyInputs.forEach(input => {
         input.addEventListener('blur', formatCurrency);
         input.addEventListener('focus', unformatCurrency);
@@ -89,50 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = value;
     });
 
-    // Handle business established selection
-    const businessEstablished = document.getElementById('00NHs00000lzslM');
-    const yearsContainer = document.getElementById('years-container');
-    businessEstablished.addEventListener('change', function() {
-        yearsContainer.classList.toggle('hidden', this.value !== 'Yes');
-    });
-
-    // Handle loan purpose selection
-    const loanPurpose = document.getElementById('00NHs00000scaqg');
-    const otherPurpose = document.getElementById('other-purpose');
-    loanPurpose.addEventListener('change', function() {
-        otherPurpose.classList.toggle('hidden', this.value !== 'Other');
-    });
-
-    // Navigation functions
-    function updateProgress() {
-        const progress = ((currentSection + 1) / sections.length) * 100;
-        progressBar.style.width = `${progress}%`;
-        progressText.textContent = `Step ${currentSection + 1} of ${sections.length}`;
-    }
-
-    function validateSection(sectionIndex) {
-        const section = sections[sectionIndex];
-        const inputs = section.querySelectorAll('input[required], select[required]');
-        let isValid = true;
-
-        inputs.forEach(input => {
-            if (input.type === 'email') {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                isValid = isValid && emailRegex.test(input.value);
-            } else if (input.classList.contains('currency')) {
-                const value = parseInt(input.value.replace(/[^0-9]/g, ''));
-                isValid = isValid && !isNaN(value) && value > 0;
-            } else if (input.type === 'tel') {
-                const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-                isValid = isValid && phoneRegex.test(input.value);
-            } else {
-                isValid = isValid && input.value.trim() !== '';
-            }
-        });
-
-        return isValid;
-    }
-
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
         const amount = parseInt(loanAmount.replace(/[^0-9]/g, ''));
@@ -153,11 +162,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (amount <= 75000) return 16.99;
             if (amount <= 150000) return 15.99;
             return 14.99;
-        } else {
+        } else if (score >= 640) {
             if (amount < 10000) return 18.99;
             if (amount <= 75000) return 17.99;
             return null; // Not eligible for higher amounts
         }
+        return null; // Not eligible
     }
 
     // Calculate monthly payment
@@ -196,7 +206,45 @@ document.addEventListener('DOMContentLoaded', function() {
         currentTerm.textContent = `${termSlider.value} months`;
     }
 
-    // Add event listeners for navigation
+    // Form validation
+    function validateSection(sectionIndex) {
+        const section = sections[sectionIndex];
+        const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (input.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                isValid = isValid && emailRegex.test(input.value);
+            } else if (input.type === 'tel') {
+                const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+                isValid = isValid && phoneRegex.test(input.value);
+            } else if (input.classList.contains('currency')) {
+                const value = parseInt(input.value.replace(/[^0-9]/g, ''));
+                isValid = isValid && !isNaN(value) && value > 0;
+            } else {
+                isValid = isValid && input.value.trim() !== '';
+            }
+
+            if (!isValid) {
+                input.classList.add('error-input');
+            } else {
+                input.classList.remove('error-input');
+            }
+        });
+
+        // Special validation for loan purpose
+        if (sectionIndex === 0 && loanPurpose.value === 'Other') {
+            isValid = isValid && otherPurposeText.value.trim() !== '';
+            if (!otherPurposeText.value.trim()) {
+                otherPurposeText.classList.add('error-input');
+            }
+        }
+
+        return isValid;
+    }
+
+    // Navigation event listeners
     document.querySelectorAll('.next-button').forEach(button => {
         button.addEventListener('click', () => {
             if (validateSection(currentSection)) {
@@ -234,15 +282,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const termSlider = document.getElementById('term-slider');
     termSlider.addEventListener('input', updatePaymentCalculator);
 
-    // Check for initial loan amount from homepage
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialAmount = urlParams.get('amount');
-    if (initialAmount) {
-        const loanAmountInput = document.getElementById('00NHs00000lzslH');
-        loanAmountInput.value = parseInt(initialAmount).toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0
-        });
+    function updateProgress() {
+        const progress = ((currentSection + 1) / sections.length) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `Step ${currentSection + 1} of ${sections.length}`;
     }
+
+    // Initialize Cloudflare Turnstile
+    window.onloadTurnstileCallback = function() {
+        turnstile.render('#turnstile-container', {
+            sitekey: '0x4AAAAAAA6JamddI1LF9dFU',
+            callback: function(token) {
+                document.getElementById('turnstile-token').value = token;
+            },
+        });
+    };
 });
