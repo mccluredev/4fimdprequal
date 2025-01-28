@@ -252,16 +252,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (validateSection(currentSection)) {
                 isAnimating = true;
-                
-                if (currentSection === 3) {
-                    // Show loading screen before calculator
-                    document.getElementById('loading-screen').classList.remove('hidden');
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    document.getElementById('loading-screen').classList.add('hidden');
-                }
 
                 const currentSect = sections[currentSection];
                 const nextSection = sections[currentSection + 1];
+
+                // Only show loading screen when transitioning to calculator section
+                if (currentSection === 3) {
+                    document.getElementById('loading-screen').classList.remove('hidden');
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    updatePaymentCalculator();
+                    document.getElementById('loading-screen').classList.add('hidden');
+                }
 
                 // Prepare next section
                 nextSection.classList.remove('hidden');
@@ -285,10 +286,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update state
                 currentSection++;
                 updateProgress();
-                
-                if (currentSection === 4) {
-                    updatePaymentCalculator();
-                }
                 
                 isAnimating = false;
             }
