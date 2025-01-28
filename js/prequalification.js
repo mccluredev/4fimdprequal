@@ -340,16 +340,24 @@ document.addEventListener('DOMContentLoaded', function() {
         progressBar.style.width = `${progress}%`;
         progressText.textContent = `Step ${currentSection + 1} of ${sections.length}`;
     }
+    
+<script>
+function onTurnstileSuccess(token) {
+    // Handle the token if needed
+    console.log('Turnstile verification successful');
+}
 
-    // Initialize Cloudflare Turnstile
-    window.onloadTurnstileCallback = function() {
-        turnstile.render('#turnstile-container', {
+window.onloadTurnstileCallback = function() {
+    turnstile.ready(function() {
+        turnstile.render('.cf-turnstile', {
             sitekey: '0x4AAAAAAA6JamddI1LF9dFU',
+            theme: 'light',
             callback: function(token) {
-                document.getElementById('turnstile-token').value = token;
-            },
+                onTurnstileSuccess(token);
+            }
         });
-    };
+    });
+};
 
     // Show first section
     if (sections.length > 0) {
