@@ -39,15 +39,21 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Format and set the loan amount
-    const formattedAmount = parseInt(loanAmount).toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-    
-    document.getElementById('00NHs00000lzslH').value = formattedAmount;
+   // Format and set the loan amount - fixed formatting
+    const amount = parseInt(loanAmount);
+    if (!isNaN(amount)) {
+        const formattedAmount = amount.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        
+        const loanAmountInput = document.getElementById('00NHs00000lzslH');
+        if (loanAmountInput) {
+            loanAmountInput.value = formattedAmount;
+        }
+    }
 
     // Initialize Google Places Autocomplete
     const autocomplete = new google.maps.places.Autocomplete(
@@ -93,22 +99,29 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('zip').value = zipCode;
     });
 
-    // Handle loan purpose selection
+      // Handle loan purpose selection - fixed "Other" handling
     const loanPurpose = document.getElementById('00NHs00000scaqg');
     const otherPurpose = document.getElementById('other-purpose');
     const otherPurposeText = document.getElementById('00NQP000003JB1F');
 
-    loanPurpose.addEventListener('change', function() {
-        const isOther = this.value === 'Other';
-        otherPurpose.classList.toggle('hidden', !isOther);
-        
-        if (isOther) {
-            otherPurposeText.setAttribute('required', 'required');
-        } else {
-            otherPurposeText.removeAttribute('required');
-            otherPurposeText.value = '';
-        }
-    });
+    if (loanPurpose) {
+        loanPurpose.addEventListener('change', function() {
+            const isOther = this.value === 'Other';
+            if (otherPurpose) {
+                otherPurpose.style.display = isOther ? 'block' : 'none';
+                otherPurpose.classList.toggle('hidden', !isOther);
+            }
+            
+            if (otherPurposeText) {
+                if (isOther) {
+                    otherPurposeText.setAttribute('required', 'required');
+                } else {
+                    otherPurposeText.removeAttribute('required');
+                    otherPurposeText.value = '';
+                }
+            }
+        });
+    }
 
     // Handle business established selection
     const businessEstablished = document.getElementById('00NHs00000lzslM');
