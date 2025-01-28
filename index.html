@@ -13,7 +13,6 @@
         
         <form id="loan-widget-form" action="prequalification.html" method="GET">
             <div class="input-group">
-                <span class="currency-symbol">$</span>
                 <input type="text" 
                        class="loan-amount" 
                        id="loan-amount"
@@ -28,7 +27,6 @@
             <button type="submit" class="apply-button">Apply Now</button>
         </form>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loan-widget-form');
@@ -41,18 +39,17 @@
             amountInput.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/[^0-9]/g, '');
                 if (value) {
-                    value = parseInt(value, 10).toString();
-                    e.target.value = value;
+                    value = parseInt(value, 10);
+                    if (!isNaN(value)) {
+                        e.target.value = value.toLocaleString('en-US');
+                    }
                 }
             });
 
             // Format on blur
             amountInput.addEventListener('blur', function(e) {
-                let value = e.target.value.replace(/[^0-9]/g, '');
-                if (value) {
-                    value = parseInt(value, 10);
-                    e.target.value = value.toLocaleString('en-US');
-                    
+                let value = parseInt(e.target.value.replace(/[^0-9,]/g, '').replace(/,/g, ''));
+                if (!isNaN(value)) {
                     if (value < minAmount || value > maxAmount) {
                         errorMessage.style.display = 'block';
                         e.target.classList.add('error-input');
@@ -60,6 +57,7 @@
                         errorMessage.style.display = 'none';
                         e.target.classList.remove('error-input');
                     }
+                    e.target.value = value.toLocaleString('en-US');
                 }
             });
 
