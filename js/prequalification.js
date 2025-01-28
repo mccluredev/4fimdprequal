@@ -1,28 +1,12 @@
-// Global Turnstile callback
-window.onTurnstileSuccess = function(token) {
-    console.log('Turnstile verification successful');
-};
-
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize variables
     const sections = document.querySelectorAll('.section');
     const progressBar = document.querySelector('.progress-bar-fill');
     const progressText = document.querySelector('.progress-text');
+    const form = document.getElementById('prequalForm');
+    const paymentCalculator = document.getElementById('payment-calculator');
     let currentSection = 0;
     let isAnimating = false;
-
-    // Initialize Turnstile
-    if (typeof turnstile !== 'undefined') {
-        turnstile.ready(function() {
-            turnstile.render('.cf-turnstile', {
-                sitekey: '0x4AAAAAAA6JamddI1LF9dFU',
-                theme: 'light',
-                callback: function(token) {
-                    window.onTurnstileSuccess(token);
-                }
-            });
-        });
-    }
 
     // Hide loading screen immediately on page load
     const loadingScreen = document.getElementById('loading-screen');
@@ -33,26 +17,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check for loan amount in URL and redirect if not present
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
-    
+
     if (!loanAmount) {
-        window.location.href = 'index.html';
+        window.location.href = '/';
         return;
     }
 
-   // Format and set the loan amount - fixed formatting
-    const amount = parseInt(loanAmount);
-    if (!isNaN(amount)) {
-        const formattedAmount = amount.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-        
-        const loanAmountInput = document.getElementById('00NHs00000lzslH');
-        if (loanAmountInput) {
-            loanAmountInput.value = formattedAmount;
-        }
+    // Format and set the loan amount
+    const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+
+    const loanAmountInput = document.getElementById('00NHs00000lzslH');
+    if (loanAmountInput) {
+        loanAmountInput.value = formattedAmount;
     }
 
     // Initialize Google Places Autocomplete
@@ -99,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('zip').value = zipCode;
     });
 
-      // Handle loan purpose selection - fixed "Other" handling
+    // Handle loan purpose selection
     const loanPurpose = document.getElementById('00NHs00000scaqg');
     const otherPurpose = document.getElementById('other-purpose');
     const otherPurposeText = document.getElementById('00NQP000003JB1F');
@@ -107,18 +88,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loanPurpose) {
         loanPurpose.addEventListener('change', function() {
             const isOther = this.value === 'Other';
-            if (otherPurpose) {
-                otherPurpose.style.display = isOther ? 'block' : 'none';
-                otherPurpose.classList.toggle('hidden', !isOther);
-            }
-            
-            if (otherPurposeText) {
-                if (isOther) {
-                    otherPurposeText.setAttribute('required', 'required');
-                } else {
-                    otherPurposeText.removeAttribute('required');
-                    otherPurposeText.value = '';
-                }
+            otherPurpose.classList.toggle('hidden', !isOther);
+
+            if (isOther) {
+                otherPurposeText.setAttribute('required', 'required');
+            } else {
+                otherPurposeText.removeAttribute('required');
+                otherPurposeText.value = '';
             }
         });
     }
@@ -128,17 +104,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const yearsContainer = document.getElementById('years-container');
     const yearsInput = document.getElementById('00NHs00000m08cv');
 
-    businessEstablished.addEventListener('change', function() {
-        const isEstablished = this.value === 'Yes';
-        yearsContainer.classList.toggle('hidden', !isEstablished);
-        
-        if (isEstablished) {
-            yearsInput.setAttribute('required', 'required');
-        } else {
-            yearsInput.removeAttribute('required');
-            yearsInput.value = '';
-        }
-    });
+    if (businessEstablished) {
+        businessEstablished.addEventListener('change', function() {
+            const isEstablished = this.value === 'Yes';
+            yearsContainer.classList.toggle('hidden', !isEstablished);
+
+            if (isEstablished) {
+                yearsInput.setAttribute('required', 'required');
+            } else {
+                yearsInput.removeAttribute('required');
+                yearsInput.value = '';
+            }
+        });
+    }
 
     // Format currency inputs
     const currencyInputs = document.querySelectorAll('.currency:not([readonly])');
@@ -166,19 +144,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Format phone number
     const phoneInput = document.getElementById('mobile');
-    phoneInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length <= 10) {
-            if (value.length > 6) {
-                value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6)}`;
-            } else if (value.length > 3) {
-                value = `(${value.slice(0,3)}) ${value.slice(3)}`;
-            } else if (value.length > 0) {
-                value = `(${value}`;
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            // Restrict to 10 digits
+            value = value.substring(0, 10);
+
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = `(${value}`;
+                } else if (value.length <= 6) {
+                    value = `(${value.slice(0,3)}) ${value.slice(3)}`;
+                } else {
+                    value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6)}`;
+                }
             }
-        }
-        e.target.value = value;
-    });
+            e.target.value = value;
+        });
+
+        // Prevent paste of invalid format
+        phoneInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            pastedText = pastedText.replace(/\D/g, '').substring(0, 10);
+            if (pastedText.length === 10) {
+                this.value = `(${pastedText.slice(0,3)}) ${pastedText.slice(3,6)}-${pastedText.slice(6)}`;
+            }
+        });
+    }
+
+    // Form validation
+    function validateSection(sectionIndex) {
+        const section = sections[sectionIndex];
+        const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (input.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                isValid = isValid && emailRegex.test(input.value);
+            } else if (input.type === 'tel') {
+                const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+                isValid = isValid && phoneRegex.test(input.value);
+            } else if (input.classList.contains('currency')) {
+                const value = parseInt(input.value.replace(/[^0-9]/g, ''));
+                isValid = isValid && !isNaN(value) && value > 0;
+            } else {
+                isValid = isValid && input.value.trim() !== '';
+            }
+
+            if (!isValid) {
+                input.classList.add('error-input');
+            } else {
+                input.classList.remove('error-input');
+            }
+        });
+
+        return isValid;
+    }
 
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
@@ -244,79 +268,127 @@ document.addEventListener('DOMContentLoaded', function() {
         currentTerm.textContent = `${termSlider.value} months`;
     }
 
-    // Form validation
-    function validateSection(sectionIndex) {
-        const section = sections[sectionIndex];
-        const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
-        let isValid = true;
-
-        inputs.forEach(input => {
-            if (input.type === 'email') {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                isValid = isValid && emailRegex.test(input.value);
-            } else if (input.type === 'tel') {
-                const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-                isValid = isValid && phoneRegex.test(input.value);
-            } else if (input.classList.contains('currency')) {
-                const value = parseInt(input.value.replace(/[^0-9]/g, ''));
-                isValid = isValid && !isNaN(value) && value > 0;
-            } else {
-                isValid = isValid && input.value.trim() !== '';
-            }
-
-            if (!isValid) {
-                input.classList.add('error-input');
-            } else {
-                input.classList.remove('error-input');
-            }
-        });
-
-        // Special validation for loan purpose
-        if (sectionIndex === 0 && loanPurpose.value === 'Other') {
-            isValid = isValid && otherPurposeText.value.trim() !== '';
-            if (!otherPurposeText.value.trim()) {
-                otherPurposeText.classList.add('error-input');
-            }
-        }
-
-        return isValid;
+    // Add term slider event listener
+    const termSlider = document.getElementById('term-slider');
+    if (termSlider) {
+        termSlider.addEventListener('input', updatePaymentCalculator);
     }
 
-    // Navigation Functions
-    async function nextSection() {
-        if (isAnimating || !validateSection(currentSection)) return;
-        
-        isAnimating = true;
-        const currentSect = sections[currentSection];
-        const nextSection = sections[currentSection + 1];
+    // Navigation event listeners with slide animations
+    document.querySelectorAll('.next-button').forEach(button => {
+        button.addEventListener('click', async () => {
+            if (isAnimating || !validateSection(currentSection)) return;
 
-        // Show loading screen for calculator
-        if (currentSection === 3) {
-            loadingScreen.classList.remove('hidden');
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            updatePaymentCalculator();
+            isAnimating = true;
+            const currentSect = sections[currentSection];
+            const nextSection = sections[currentSection + 1];
+
+            // Prepare next section
+            nextSection.classList.remove('hidden');
+            nextSection.classList.add('slide-enter');
+
+            // Force reflow
+            void nextSection.offsetWidth;
+
+            // Start animation
+            currentSect.classList.add('slide-exit-active');
+            nextSection.classList.add('slide-enter-active');
+
+            // Wait for animation
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Cleanup
+            currentSect.classList.add('hidden');
+            currentSect.classList.remove('slide-exit-active');
+            nextSection.classList.remove('slide-enter', 'slide-enter-active');
+
+            // Update state
+            currentSection++;
+            updateProgress();
+            isAnimating = false;
+        });
+    });
+
+    document.querySelectorAll('.back-button').forEach(button => {
+        button.addEventListener('click', async () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const currentSect = sections[currentSection];
+            const prevSection = sections[currentSection - 1];
+
+            // Prepare previous section
+            prevSection.classList.remove('hidden');
+            prevSection.classList.add('slide-back-enter');
+
+            // Force reflow
+            void prevSection.offsetWidth;
+
+            // Start animation
+            currentSect.classList.add('slide-back-exit-active');
+            prevSection.classList.add('slide-back-enter-active');
+
+            // Wait for animation
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Cleanup
+            currentSect.classList.add('hidden');
+            currentSect.classList.remove('slide-back-exit-active');
+            prevSection.classList.remove('slide-back-enter', 'slide-back-enter-active');
+
+            // Update state
+            currentSection--;
+            updateProgress();
+            isAnimating = false;
+        });
+    });
+
+    // Handle form submission
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (!validateSection(currentSection)) return;
+
+        loadingScreen.classList.remove('hidden');
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                // Hide form sections
+                sections.forEach(section => section.classList.add('hidden'));
+
+                // Show and update calculator
+                paymentCalculator.classList.remove('hidden');
+                updatePaymentCalculator();
+
+                // Update progress text
+                progressText.textContent = 'Estimate Complete';
+                progressBar.style.width = '100%';
+            } else {
+                alert('There was an error submitting your application. Please try again.');
+            }
+        } catch (error) {
+            alert('There was an error submitting your application. Please try again.');
+            console.error('Submission error:', error);
+        } finally {
             loadingScreen.classList.add('hidden');
         }
+    });
 
-        // Animation sequence
-        currentSect.style.transform = 'translateX(0)';
-        nextSection.classList.remove('hidden');
-        nextSection.style.transform = 'translateX(100%)';
-        
-        await new Promise(resolve => setTimeout(resolve, 50));
-        
-        currentSect.style.transform = 'translateX(-100%)';
-        nextSection.style.transform = 'translateX(0)';
-        currentSect.style.opacity = '0';
-        nextSection.style.opacity = '1';
-        
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        currentSect.classList.add('hidden');
-        currentSection++;
-        updateProgress();
-        isAnimating = false;
+    function updateProgress() {
+        const progress = ((currentSection + 1) / 4) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `Step ${currentSection + 1} of 4`;
     }
 
-    async function previousSection() {
-        if (isAnimating || currentSection
+    // Show first section
+    if (sections.length > 0) {
+        sections[0].classList.remove('hidden');
+    }
+    updateProgress();
+});
