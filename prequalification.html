@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
     <title>Loan Pre-qualification</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYoh0dFh9SX2eIOe7lXesPbUb6lnPhqgU&libraries=places"></script>
-    <script src="js/prequalification.js" defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYoh0dFh9SX2eIOe7lXesPbUb6lnPhqgU&libraries=places" async defer></script>
 </head>
 <body>
     <div class="container">
@@ -16,14 +15,10 @@
             <div class="progress-bar">
                 <div class="progress-bar-fill"></div>
             </div>
-            <div class="progress-text">Step 1 of 5</div>
+            <div class="progress-text">Step 1 of 4</div>
         </div>
 
-        <form id="prequalForm" action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DHs000003XeKL" method="POST">
-            <!-- Salesforce Hidden Fields -->
-            <input type="hidden" name="oid" value="00DHs000003XeKL">
-            <input type="hidden" name="retURL" value="http://4fimd.com">
-
+        <form id="prequalForm" action="{{ url_for('submit_application') }}" method="POST">
             <!-- Section 1: Loan Info -->
             <div class="section" id="section-1">
                 <h2>Loan Information</h2>
@@ -47,9 +42,9 @@
                 <div id="other-purpose" class="hidden">
                     <label for="other-purpose-text">Please specify *</label>
                     <textarea id="00NQP000003JB1F" 
-                            name="00NQP000003JB1F" 
-                            wrap="soft" 
-                            rows="3"></textarea>
+                              name="00NQP000003JB1F" 
+                              wrap="soft" 
+                              rows="3"></textarea>
                 </div>
 
                 <button type="button" class="next-button">Next</button>
@@ -140,7 +135,7 @@
                 </div>
             </div>
 
-            <!-- Section 4: Customer Info -->
+            <!-- Section 4: Personal Info -->
             <div class="section hidden" id="section-4">
                 <h2>Personal Information</h2>
                 <label for="first-name">First Name *</label>
@@ -177,36 +172,34 @@
                        id="autocomplete" 
                        placeholder="Start typing your address">
 
-                <!-- Hidden address fields for Salesforce -->
+                <!-- Hidden address fields -->
                 <input type="hidden" id="street" name="street">
                 <input type="hidden" id="city" name="city">
                 <input type="hidden" id="state" name="state">
                 <input type="hidden" id="zip" name="zip">
 
-                <!-- Cloudflare Turnstile -->
-                <div class="cf-turnstile" 
-     data-sitekey="0x4AAAAAAA6JamddI1LF9dFU" 
-     data-theme="light"
-     data-callback="onTurnstileSuccess"></div>
-
                 <div class="button-container">
                     <button type="button" class="back-button">Back</button>
-                    <button type="button" class="next-button">Calculate Payment</button>
+                    <button type="submit" class="submit-button">Submit Application and View My Estimate</button>
                 </div>
             </div>
+        </form>
 
-            <!-- Section 5: Payment Calculator -->
-            <div class="section hidden" id="section-5">
-                <h2>Your Estimated Payment</h2>
-                
-                <div class="calculator-container">
-                    <div class="rate-info">
-                        <h3>Your Rate Information</h3>
-                        <p id="rate-text"></p>
-                    </div>
+        <!-- Payment Calculator (shown after form submission) -->
+        <div class="section hidden" id="payment-calculator">
+            <h2>Your Estimated Payment</h2>
+            <div class="calculator-container">
+                <div class="rate-info">
+                    <h3>Your Rate Information</h3>
+                    <p id="rate-text"></p>
+                </div>
 
-                    <div class="payment-display" id="monthly-payment"></div>
+                <div class="payment-display">
+                    <label>Estimated Monthly Payment:</label>
+                    <div id="monthly-payment" class="amount"></div>
+                </div>
 
+                <div class="term-slider-container">
                     <label for="term-slider">Adjust Loan Term</label>
                     <input type="range" 
                            id="term-slider" 
@@ -220,20 +213,19 @@
                         <span id="current-term">60 months</span>
                         <span>144 months</span>
                     </div>
-
-                    <div class="button-container">
-                        <button type="button" class="back-button">Back</button>
-                        <button type="submit" class="submit-button">Submit Application</button>
-                    </div>
                 </div>
+
+                <a href="https://4fimd.com" class="return-home">Return to Home</a>
             </div>
-        </form>
+        </div>
     </div>
 
     <!-- Loading Screen -->
-<div id="loading-screen" class="hidden">
-    <h2>Calculating your estimate...</h2>
-    <div class="spinner"></div>
-</div>
+    <div id="loading-screen" class="hidden">
+        <h2>Calculating your estimate...</h2>
+        <div class="spinner"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/prequalification.js') }}"></script>
 </body>
 </html>
