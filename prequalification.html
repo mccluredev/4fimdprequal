@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <title>Loan Pre-qualification</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYoh0dFh9SX2eIOe7lXesPbUb6lnPhqgU&libraries=places"></script>
+    <script src="js/prequalification.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-text">Step 1 of 5</div>
+        </div>
+
+        <form id="prequalForm" action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DHs000003XeKL" method="POST">
+            <!-- Salesforce Hidden Fields -->
+            <input type="hidden" name="oid" value="00DHs000003XeKL">
+            <input type="hidden" name="retURL" value="http://4fimd.com">
+
+            <!-- Section 1: Loan Info -->
+            <div class="section" id="section-1">
+                <h2>Loan Information</h2>
+                <label for="loan-amount">How much would you like to finance? *</label>
+                <input type="text" 
+                       id="00NHs00000lzslH" 
+                       name="00NHs00000lzslH" 
+                       class="currency" 
+                       required>
+                <div id="loan-amount-error" class="error"></div>
+
+                <label for="loan-purpose">What is the purpose of your loan? *</label>
+                <select id="00NHs00000scaqg" name="00NHs00000scaqg" required>
+                    <option value="">Select</option>
+                    <option value="Working Capital">Working Capital</option>
+                    <option value="Equipment Purchase">Equipment Purchase</option>
+                    <option value="Other">Other</option>
+                </select>
+                <div id="other-purpose" class="hidden">
+                    <label for="other-purpose-text">Please specify *</label>
+                    <input type="text" id="other-purpose-text">
+                </div>
+
+                <button type="button" class="next-button">Next</button>
+            </div>
+
+            <!-- Section 2: Credit Info -->
+            <div class="section hidden" id="section-2">
+                <!-- [Previous credit info section] -->
+            </div>
+
+            <!-- Section 3: Business Info -->
+            <div class="section hidden" id="section-3">
+                <!-- [Previous business info section] -->
+            </div>
+
+            <!-- Section 4: Customer Info -->
+            <div class="section hidden" id="section-4">
+                <!-- [Previous customer info section] -->
+            </div>
+
+            <!-- Section 5: Payment Calculator -->
+            <div class="section hidden" id="section-5">
+                <!-- [Previous payment calculator section] -->
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="hidden">
+        <h2>Calculating your estimate...</h2>
+        <div class="spinner"></div>
+    </div>
+</body>
+</html>
