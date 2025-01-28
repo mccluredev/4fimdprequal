@@ -8,13 +8,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentSection = 0;
     let isAnimating = false;
 
-    // Hide loading screen initially
+    // Hide loading screen immediately on page load
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
         loadingScreen.classList.add('hidden');
     }
 
-    // Get and validate loan amount from URL
+    // Check for loan amount in URL and redirect if not present
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
 
@@ -112,7 +112,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Currency formatting functions
+    // Format currency inputs
+    const currencyInputs = document.querySelectorAll('.currency:not([readonly])');
+    currencyInputs.forEach(input => {
+        input.addEventListener('blur', formatCurrency);
+        input.addEventListener('focus', unformatCurrency);
+    });
+
     function formatCurrency(e) {
         let value = e.target.value.replace(/[^0-9]/g, '');
         if (value) {
@@ -130,20 +136,13 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     }
 
-    // Add currency formatting to inputs
-    const currencyInputs = document.querySelectorAll('.currency:not([readonly])');
-    currencyInputs.forEach(input => {
-        input.addEventListener('blur', formatCurrency);
-        input.addEventListener('focus', unformatCurrency);
-    });
-
-    // Phone number formatting
+    // Format phone number
     const phoneInput = document.getElementById('mobile');
     if (phoneInput) {
         phoneInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             value = value.substring(0, 10);
-            
+
             if (value.length > 0) {
                 if (value.length <= 3) {
                     value = `(${value}`;
@@ -154,6 +153,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             e.target.value = value;
+        });
+
+        // Prevent paste of invalid format
+        phoneInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            pastedText = pastedText.replace(/\D/g, '').substring(0, 10);
+            if (pastedText.length === 10) {
+                this.value = `(${pastedText.slice(0,3)}) ${pastedText.slice(3,6)}-${pastedText.slice(6)}`;
+            }
         });
     }
 
@@ -183,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
-    // Interest rate calculation
+    // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
         const amount = parseInt(loanAmount.replace(/[^0-9]/g, ''));
         const score = parseInt(creditScore);
@@ -211,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return null;
     }
 
-    // Payment calculation
+    // Calculate monthly payment
     function calculateMonthlyPayment(principal, annualRate, termMonths) {
         const monthlyRate = annualRate / 100 / 12;
         const payment = principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths) / 
@@ -219,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.round(payment * 100) / 100;
     }
 
-    // Update payment calculator display
+    // Update payment calculator
     function updatePaymentCalculator() {
         const loanAmount = document.getElementById('00NHs00000lzslH').value;
         const creditScore = document.getElementById('00NHs00000m08cg').value;
@@ -247,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentTerm.textContent = `${termSlider.value} months`;
     }
 
-    // Term slider event listener
+    // Add term slider event listener
     const termSlider = document.getElementById('term-slider');
     if (termSlider) {
         termSlider.addEventListener('input', updatePaymentCalculator);
@@ -296,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => slideSection(-1));
     });
 
-    // Form submission handler
+    // Form submission handler for Salesforce
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -305,24 +314,21 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.remove('hidden');
 
         try {
-            const formData = new FormData(form);
-            const response = await fetch('submit.php', {
-                method: 'POST',
-                body: formData
-            });
+            // Show calculator before form submission
+            sections.forEach(section => section.classList.add('hidden'));
+            paymentCalculator.classList.remove('hidden');
+            updatePaymentCalculator();
+            progressText.textContent = 'Estimate Complete';
+            progressBar.style.width = '100%';
 
-            if (response.ok) {
-                sections.forEach(section => section.classList.add('hidden'));
-                paymentCalculator.classList.remove('hidden');
-                updatePaymentCalculator();
-                progressText.textContent = 'Estimate Complete';
-                progressBar.style.width = '100%';
-            } else {
-                alert('There was an error submitting your application. Please try again.');
-            }
+            // Submit to Salesforce after showing calculator
+            setTimeout(() => {
+                form.submit(); // This will redirect to the retURL specified in the form
+            }, 2000); // Give user 2 seconds to see their estimate
+
         } catch (error) {
-            alert('There was an error submitting your application. Please try again.');
             console.error('Submission error:', error);
+            alert('There was an error submitting your application. Please try again.');
         } finally {
             loadingScreen.classList.add('hidden');
         }
@@ -335,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
         progressText.textContent = `Step ${currentSection + 1} of 4`;
     }
 
-    // Initialize first section
+    // Show first section
     if (sections.length > 0) {
         sections[0].classList.remove('hidden');
     }
