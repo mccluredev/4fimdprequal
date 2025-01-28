@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize variables
     const sections = document.querySelectorAll('.section');
@@ -253,37 +254,49 @@ document.addEventListener('DOMContentLoaded', function() {
             if (validateSection(currentSection)) {
                 isAnimating = true;
 
+                // Check if we're moving to the calculator section
+                if (currentSection === 3 && button.textContent.trim() === 'Calculate Payment') {
+                    const loadingScreen = document.getElementById('loading-screen');
+                    
+                    try {
+                        // Show loading screen
+                        loadingScreen.classList.remove('hidden');
+                        
+                        // Wait for loading screen to be visible
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        // Simulate calculation time
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        
+                        // Update calculator
+                        updatePaymentCalculator();
+                        
+                    } catch (error) {
+                        console.error('Error during calculation:', error);
+                    } finally {
+                        // Hide loading screen
+                        loadingScreen.classList.add('hidden');
+                    }
+                }
+
                 const currentSect = sections[currentSection];
                 const nextSection = sections[currentSection + 1];
 
-                // Only show loading screen when transitioning to calculator section
-                if (currentSection === 3) {
-                    document.getElementById('loading-screen').classList.remove('hidden');
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    updatePaymentCalculator();
-                    document.getElementById('loading-screen').classList.add('hidden');
-                }
-
-                // Prepare next section
+                // Animation code
                 nextSection.classList.remove('hidden');
                 nextSection.classList.add('slide-enter');
 
-                // Force reflow
                 void nextSection.offsetWidth;
 
-                // Start animation
                 currentSect.classList.add('slide-exit-active');
                 nextSection.classList.add('slide-enter-active');
 
-                // Wait for animation
                 await new Promise(resolve => setTimeout(resolve, 500));
 
-                // Cleanup
                 currentSect.classList.add('hidden');
                 currentSect.classList.remove('slide-exit-active');
                 nextSection.classList.remove('slide-enter', 'slide-enter-active');
 
-                // Update state
                 currentSection++;
                 updateProgress();
                 
