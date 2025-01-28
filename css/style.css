@@ -232,58 +232,51 @@ button:disabled {
 }
 
 /* Loading Screen */
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.loading-content {
-    text-align: center;
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.loading-overlay.hidden {
-    display: none;
-}
 #loading-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 9999;  /* Increased to ensure it's above all content */
     transition: opacity 0.3s ease;
 }
 
+#loading-screen h2 {
+    color: var(--brand-blue);
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
 .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid var(--brand-blue);
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--brand-blue);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Make sure this is defined if not already present */
+.hidden {
+    display: none !important;
+}
+
+/* Update container positioning */
+.container {
+    position: relative;
 }
 
 /* Hide sections properly */
