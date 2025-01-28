@@ -2,60 +2,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('loan-widget-form');
     const amountInput = document.getElementById('loan-amount');
     const errorMessage = document.getElementById('amount-error');
-    const minAmount = 1000;
-    const maxAmount = 1000000;
 
-    // Show currency symbol
-    const currencySymbol = document.querySelector('.currency-symbol');
-    if (currencySymbol) {
-        currencySymbol.style.display = 'block';
+    function formatCurrency(value) {
+        return value.replace(/[^0-9]/g, '');
     }
 
-    // Format amount as user types
+    function validateAmount(amount) {
+        const value = parseInt(formatCurrency(amount));
+        return value >= 1000 && value <= 1000000;
+    }
+
     amountInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^0-9]/g, '');
+        let value = formatCurrency(e.target.value);
         if (value) {
-            value = parseInt(value, 10);
-            if (!isNaN(value)) {
-                e.target.value = `${value.toLocaleString('en-US')}`;
-            }
+            value = parseInt(value).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            e.target.value = value;
         }
     });
 
-    // Format on blur
-    amountInput.addEventListener('blur', function(e) {
-        let value = parseInt(e.target.value.replace(/[^0-9,]/g, '').replace(/,/g, ''));
-        if (!isNaN(value)) {
-            if (value < minAmount || value > maxAmount) {
-                errorMessage.style.display = 'block';
-                e.target.classList.add('error-input');
-            } else {
-                errorMessage.style.display = 'none';
-                e.target.classList.remove('error-input');
-            }
-            e.target.value = value.toLocaleString('en-US');
-        }
-    });
-
-    // Remove formatting on focus
-    amountInput.addEventListener('focus', function(e) {
-        let value = e.target.value.replace(/[^0-9]/g, '');
-        e.target.value = value;
-    });
-
-    // Form submission validation
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        let amount = parseInt(amountInput.value.replace(/[^0-9]/g, ''), 10);
-        
-        if (!amount || amount < minAmount || amount > maxAmount) {
+        if (!validateAmount(amountInput.value)) {
             errorMessage.style.display = 'block';
-            amountInput.classList.add('error-input');
             return;
         }
-        
-        // Navigate to prequalification page
-        window.location.href = `prequalification.html?amount=${amount}`;
+        errorMessage.style.display = 'none';
+        this.submit();
     });
 });
