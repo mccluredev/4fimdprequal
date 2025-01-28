@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Professional Loans</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="loan-widget">
         <h2 class="widget-title">Get Started Today</h2>
         <p class="widget-subtitle">Find out how much you could qualify for</p>
         
-        <form id="loan-widget-form" action="prequalification.html" method="GET">
+        <form id="loan-widget-form" action="{{ url_for('prequalification') }}" method="GET">
             <div class="input-group">
                 <span class="currency-symbol">$</span>
                 <input type="text" 
@@ -28,6 +28,6 @@
             <button type="submit" class="apply-button">Apply Now</button>
         </form>
     </div>
-    <script src="js/index.js"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>
