@@ -27,13 +27,14 @@
             <!-- Section 1: Loan Info -->
             <div class="section" id="section-1">
                 <h2>Loan Information</h2>
-                <label for="loan-amount">How much would you like to finance? *</label>
-                <input type="text" 
-                       id="00NHs00000lzslH" 
-                       name="00NHs00000lzslH" 
-                       class="currency" 
-                       required>
-                <div id="loan-amount-error" class="error"></div>
+                <div class="loan-summary">
+                    <label>Requested Loan Amount:</label>
+                    <input type="text" 
+                           id="00NHs00000lzslH" 
+                           name="00NHs00000lzslH" 
+                           class="currency" 
+                           readonly>
+                </div>
 
                 <label for="loan-purpose">What is the purpose of your loan? *</label>
                 <select id="00NHs00000scaqg" name="00NHs00000scaqg" required>
@@ -42,9 +43,13 @@
                     <option value="Equipment Purchase">Equipment Purchase</option>
                     <option value="Other">Other</option>
                 </select>
+
                 <div id="other-purpose" class="hidden">
                     <label for="other-purpose-text">Please specify *</label>
-                    <input type="text" id="other-purpose-text">
+                    <textarea id="00NQP000003JB1F" 
+                            name="00NQP000003JB1F" 
+                            wrap="soft" 
+                            rows="3"></textarea>
                 </div>
 
                 <button type="button" class="next-button">Next</button>
@@ -52,22 +57,172 @@
 
             <!-- Section 2: Credit Info -->
             <div class="section hidden" id="section-2">
-                <!-- [Previous credit info section] -->
+                <h2>Credit Information</h2>
+                <label for="credit-score">Estimated Credit Score *</label>
+                <select id="00NHs00000m08cg" name="00NHs00000m08cg" required>
+                    <option value="">Select</option>
+                    <option value="760">760 or higher</option>
+                    <option value="720">720 - 759</option>
+                    <option value="680">680 - 719</option>
+                    <option value="640">640 - 679</option>
+                    <option value="639">Below 640</option>
+                </select>
+
+                <label for="monthly-income">Estimated Monthly Income *</label>
+                <input type="text" 
+                       id="00NHs00000m08cl" 
+                       name="00NHs00000m08cl" 
+                       class="currency" 
+                       required>
+
+                <label for="monthly-debt">Estimated Monthly Debt *</label>
+                <input type="text" 
+                       id="00NHs00000m08cq" 
+                       name="00NHs00000m08cq" 
+                       class="currency" 
+                       required>
+
+                <div class="button-container">
+                    <button type="button" class="back-button">Back</button>
+                    <button type="button" class="next-button">Next</button>
+                </div>
             </div>
 
             <!-- Section 3: Business Info -->
             <div class="section hidden" id="section-3">
-                <!-- [Previous business info section] -->
+                <h2>Business Information</h2>
+                <label for="business-established">Business Established *</label>
+                <select id="00NHs00000lzslM" name="00NHs00000lzslM" required>
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+
+                <div id="years-container" class="hidden">
+                    <label for="years-in-business">Years in Business *</label>
+                    <input type="number" 
+                           id="00NHs00000m08cv" 
+                           name="00NHs00000m08cv" 
+                           min="0" 
+                           max="100">
+                </div>
+
+                <label for="area-expertise">Area of Expertise *</label>
+                <select id="00NHs00000lzslR" name="00NHs00000lzslR" required>
+                    <option value="">Select</option>
+                    <option value="Acupuncturist">Acupuncturist</option>
+                    <option value="Advanced Practising RN">Advanced Practising RN</option>
+                    <option value="Advanced Registered NP">Advanced Registered NP</option>
+                    <option value="Certified Registered Nurse Anaesthetist">Certified Registered Nurse Anaesthetist</option>
+                    <option value="Chiropractor">Chiropractor</option>
+                    <option value="Dental Hygienist">Dental Hygienist</option>
+                    <option value="Dentist">Dentist</option>
+                    <option value="Doctor of Physical Therapy">Doctor of Physical Therapy</option>
+                    <option value="Licensed Practical Nurse">Licensed Practical Nurse</option>
+                    <option value="Naturopathic">Naturopathic</option>
+                    <option value="Occupational Therapist">Occupational Therapist</option>
+                    <option value="Optometrist">Optometrist</option>
+                    <option value="Osteopath">Osteopath</option>
+                    <option value="Pharmacist">Pharmacist</option>
+                    <option value="Physical Therapist">Physical Therapist</option>
+                    <option value="Physician/Surgeon">Physician/Surgeon</option>
+                    <option value="Physician Assistant">Physician Assistant</option>
+                    <option value="Podiatrist">Podiatrist</option>
+                    <option value="Psychologist">Psychologist</option>
+                    <option value="Registered Nurse">Registered Nurse</option>
+                    <option value="Speech-Language Pathologist">Speech-Language Pathologist</option>
+                    <option value="Veterinarian">Veterinarian</option>
+                </select>
+
+                <div class="button-container">
+                    <button type="button" class="back-button">Back</button>
+                    <button type="button" class="next-button">Next</button>
+                </div>
             </div>
 
             <!-- Section 4: Customer Info -->
             <div class="section hidden" id="section-4">
-                <!-- [Previous customer info section] -->
+                <h2>Personal Information</h2>
+                <label for="first-name">First Name *</label>
+                <input type="text" 
+                       id="first_name" 
+                       name="first_name" 
+                       required 
+                       pattern="[A-Za-z ]+" 
+                       title="Please enter letters only">
+
+                <label for="last-name">Last Name *</label>
+                <input type="text" 
+                       id="last_name" 
+                       name="last_name" 
+                       required 
+                       pattern="[A-Za-z ]+" 
+                       title="Please enter letters only">
+
+                <label for="email">Email Address *</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       required>
+
+                <label for="mobile">Mobile Phone *</label>
+                <input type="tel" 
+                       id="mobile" 
+                       name="mobile" 
+                       required 
+                       placeholder="(XXX) XXX-XXXX">
+
+                <label for="address">Address *</label>
+                <input type="text" 
+                       id="autocomplete" 
+                       placeholder="Start typing your address">
+
+                <!-- Hidden address fields for Salesforce -->
+                <input type="hidden" id="street" name="street">
+                <input type="hidden" id="city" name="city">
+                <input type="hidden" id="state" name="state">
+                <input type="hidden" id="zip" name="zip">
+
+                <!-- Cloudflare Turnstile -->
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAA6JamddI1LF9dFU"></div>
+
+                <div class="button-container">
+                    <button type="button" class="back-button">Back</button>
+                    <button type="button" class="next-button">Calculate Payment</button>
+                </div>
             </div>
 
             <!-- Section 5: Payment Calculator -->
             <div class="section hidden" id="section-5">
-                <!-- [Previous payment calculator section] -->
+                <h2>Your Estimated Payment</h2>
+                
+                <div class="calculator-container">
+                    <div class="rate-info">
+                        <h3>Your Rate Information</h3>
+                        <p id="rate-text"></p>
+                    </div>
+
+                    <div class="payment-display" id="monthly-payment"></div>
+
+                    <label for="term-slider">Adjust Loan Term</label>
+                    <input type="range" 
+                           id="term-slider" 
+                           class="term-slider" 
+                           min="6" 
+                           max="144" 
+                           step="6" 
+                           value="60">
+                    <div class="term-labels">
+                        <span>6 months</span>
+                        <span id="current-term">60 months</span>
+                        <span>144 months</span>
+                    </div>
+
+                    <div class="button-container">
+                        <button type="button" class="back-button">Back</button>
+                        <button type="submit" class="submit-button">Submit Application</button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
