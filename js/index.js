@@ -5,6 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const minAmount = 1000;
     const maxAmount = 1000000;
 
+    // Show currency symbol
+    const currencySymbol = document.querySelector('.currency-symbol');
+    if (currencySymbol) {
+        currencySymbol.style.display = 'block';
+    }
+
     // Format amount as user types
     amountInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/[^0-9]/g, '');
@@ -49,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Ensure we're navigating to the correct page with the amount
+        // Navigate to prequalification page
         window.location.href = `prequalification.html?amount=${amount}`;
     });
 });
