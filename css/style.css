@@ -82,7 +82,7 @@ body {
 /* Form Elements */
 .input-group {
     position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 25px;
 }
 
 .loan-amount {
@@ -97,6 +97,7 @@ body {
     transform: translateY(-50%);
     color: #333;
     font-weight: bold;
+    z-index: 1;
 }
 
 .input-group input {
@@ -107,7 +108,8 @@ body {
 label {
     display: block;
     font-size: 0.875rem;
-    margin-bottom: 0.5rem;
+    margin-top: 20px;
+    margin-bottom: 8px;
     font-weight: 600;
     color: var(--brand-grey);
 }
@@ -137,9 +139,22 @@ textarea {
     resize: vertical;
 }
 
-/* Remove currency symbol positioning */
-.currency-symbol {
-    display: none;
+/* Section Styling */
+.section {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    padding: 40px 60px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.section h2 {
+    text-align: center;
+    color: var(--brand-blue);
+    margin-bottom: 30px;
 }
 
 /* Buttons */
@@ -188,17 +203,6 @@ button:disabled {
     background-color: #f0f0f0;
     transform: translateY(-2px);
 }
-
-/* Section Styling */
-.section {
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    transition: transform 0.5s ease;
-    padding: 30px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
 /* Calculator Styles */
 .calculator-container {
@@ -276,8 +280,39 @@ button:disabled {
     100% { transform: rotate(360deg); }
 }
 
-.hidden {
-    display: none !important;
+/* Slide animations */
+.slide-enter {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.slide-enter-active {
+    opacity: 1;
+    transform: translateX(0%);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.slide-exit-active {
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.slide-back-enter {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.slide-back-enter-active {
+    opacity: 1;
+    transform: translateX(0%);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.slide-back-exit-active {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s, transform 0.5s;
 }
 
 /* Cloudflare Turnstile */
@@ -285,6 +320,10 @@ button:disabled {
     margin: 20px 0;
     display: flex;
     justify-content: center;
+}
+
+.hidden {
+    display: none !important;
 }
 
 /* Responsive Design */
