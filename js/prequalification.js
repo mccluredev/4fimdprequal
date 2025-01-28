@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize variables
     const sections = document.querySelectorAll('.section');
@@ -6,6 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressText = document.querySelector('.progress-text');
     let currentSection = 0;
     let isAnimating = false;
+
+    // Hide loading screen immediately on page load
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+    }
 
     // Check for loan amount in URL and redirect if not present
     const urlParams = new URLSearchParams(window.location.search);
@@ -249,59 +254,46 @@ document.addEventListener('DOMContentLoaded', function() {
     // Navigation event listeners with slide animations
     document.querySelectorAll('.next-button').forEach(button => {
         button.addEventListener('click', async () => {
-            if (isAnimating) return;
+            if (isAnimating || !validateSection(currentSection)) return;
             
-            if (validateSection(currentSection)) {
-                isAnimating = true;
+            isAnimating = true;
+            const currentSect = sections[currentSection];
+            const nextSection = sections[currentSection + 1];
 
-                // Check if we're moving to the calculator section
-                if (currentSection === 3 && button.textContent.trim() === 'Calculate Payment') {
-                    const loadingScreen = document.getElementById('loading-screen');
-                    
-                    try {
-                        // Show loading screen
-                        loadingScreen.classList.remove('hidden');
-                        
-                        // Wait for loading screen to be visible
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                        
-                        // Simulate calculation time
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                        
-                        // Update calculator
-                        updatePaymentCalculator();
-                        
-                    } catch (error) {
-                        console.error('Error during calculation:', error);
-                    } finally {
-                        // Hide loading screen
-                        loadingScreen.classList.add('hidden');
-                    }
+            // Show loading screen only when going to calculator section
+            if (currentSection === 3) {
+                loadingScreen.classList.remove('hidden');
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    updatePaymentCalculator();
+                } finally {
+                    loadingScreen.classList.add('hidden');
                 }
-
-                const currentSect = sections[currentSection];
-                const nextSection = sections[currentSection + 1];
-
-                // Animation code
-                nextSection.classList.remove('hidden');
-                nextSection.classList.add('slide-enter');
-
-                void nextSection.offsetWidth;
-
-                currentSect.classList.add('slide-exit-active');
-                nextSection.classList.add('slide-enter-active');
-
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                currentSect.classList.add('hidden');
-                currentSect.classList.remove('slide-exit-active');
-                nextSection.classList.remove('slide-enter', 'slide-enter-active');
-
-                currentSection++;
-                updateProgress();
-                
-                isAnimating = false;
             }
+
+            // Prepare next section
+            nextSection.classList.remove('hidden');
+            nextSection.classList.add('slide-enter');
+
+            // Force reflow
+            void nextSection.offsetWidth;
+
+            // Start animation
+            currentSect.classList.add('slide-exit-active');
+            nextSection.classList.add('slide-enter-active');
+
+            // Wait for animation
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Cleanup
+            currentSect.classList.add('hidden');
+            currentSect.classList.remove('slide-exit-active');
+            nextSection.classList.remove('slide-enter', 'slide-enter-active');
+
+            // Update state
+            currentSection++;
+            updateProgress();
+            isAnimating = false;
         });
     });
 
@@ -358,4 +350,10 @@ document.addEventListener('DOMContentLoaded', function() {
             },
         });
     };
+
+    // Show first section
+    if (sections.length > 0) {
+        sections[0].classList.remove('hidden');
+    }
+    updateProgress();
 });
