@@ -41,7 +41,6 @@
             amountInput.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/[^0-9]/g, '');
                 if (value) {
-                    // Remove leading zeros
                     value = parseInt(value, 10).toString();
                     e.target.value = value;
                 }
@@ -54,7 +53,6 @@
                     value = parseInt(value, 10);
                     e.target.value = value.toLocaleString('en-US');
                     
-                    // Validate amount range
                     if (value < minAmount || value > maxAmount) {
                         errorMessage.style.display = 'block';
                         e.target.classList.add('error-input');
@@ -83,7 +81,6 @@
                     return;
                 }
                 
-                // Proceed to prequalification form
                 window.location.href = `prequalification.html?amount=${amount}`;
             });
         });
