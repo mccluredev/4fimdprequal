@@ -6,15 +6,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentSection = 0;
     let isAnimating = false;
 
+    // Initialize form functionality based on current page
+    const form = document.getElementById('loan-widget-form');
+    const prequalForm = document.getElementById('prequalForm');
+
     // Hide loading screen immediately on page load
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
         loadingScreen.classList.add('hidden');
     }
-
-    // Initialize form functionality based on current page
-    const form = document.getElementById('loan-widget-form');
-    const prequalForm = document.getElementById('prequalForm');
 
     // Index page functionality
     if (form) {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             errorMessage.style.display = 'none';
-            this.submit();
+            window.location.href = `./prequalification.html?amount=${encodeURIComponent(amountInput.value)}`;
         });
     }
 
@@ -61,12 +61,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const loanAmount = urlParams.get('amount');
 
         if (!loanAmount) {
-            window.location.href = 'index.html';
+            window.location.href = './index.html';
             return;
         }
 
         // Format and set the loan amount
-        const formattedAmount = parseInt(loanAmount).toLocaleString('en-US', {
+        const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
             style: 'currency',
             currency: 'USD',
             minimumFractionDigits: 0,
