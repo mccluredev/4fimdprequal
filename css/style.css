@@ -1,15 +1,28 @@
 /* Global Styles */
+:root {
+    --brand-grey: #818181;
+    --brand-blue: #045a81;
+    --brand-yellow: #ffcd05;
+    --brand-blue-dark: #034669;
+    --brand-blue-light: rgba(4, 90, 129, 0.1);
+    --success: #22c55e;
+    --error: #ef4444;
+    --text-primary: #333333;
+    --text-secondary: var(--brand-grey);
+    --background-light: #f9fafb;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--background-light);
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--text-primary);
 }
 
 /* Homepage Widget Styles */
 .loan-widget {
-    background: linear-gradient(135deg, #045a81 0%, #034669 100%);
+    background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%);
     padding: 40px;
     border-radius: 12px;
     color: white;
@@ -32,6 +45,84 @@ body {
     opacity: 0.9;
 }
 
+/* Form Container Setup */
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Section Styling */
+.section {
+    width: 100%;
+    position: absolute;
+    transition: transform 0.5s ease;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Slide Animation Classes */
+.slide-enter {
+    transform: translateX(100%);
+}
+
+.slide-enter-active {
+    transform: translateX(0%);
+}
+
+.slide-exit {
+    transform: translateX(0%);
+}
+
+.slide-exit-active {
+    transform: translateX(-100%);
+}
+
+.slide-back-enter {
+    transform: translateX(-100%);
+}
+
+.slide-back-enter-active {
+    transform: translateX(0%);
+}
+
+.slide-back-exit {
+    transform: translateX(0%);
+}
+
+.slide-back-exit-active {
+    transform: translateX(100%);
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--brand-grey);
+    margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-select,
+.loan-amount {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--brand-grey);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background-color: white;
+    box-sizing: border-box;
+}
+
 .input-group {
     position: relative;
     margin-bottom: 25px;
@@ -43,48 +134,40 @@ body {
     top: 50%;
     transform: translateY(-50%);
     font-size: 18px;
-    color: #045a81;
+    color: var(--brand-blue);
     font-weight: bold;
 }
 
-.loan-amount {
+/* Buttons */
+.apply-button,
+.form-button {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
     width: 100%;
-    padding: 15px 15px 15px 35px;
-    font-size: 18px;
-    border: none;
-    border-radius: 6px;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
 }
 
 .apply-button {
-    background-color: #ffffff;
-    color: #045a81;
-    border: none;
-    padding: 15px 30px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    transition: all 0.3s ease;
-}
-
-.apply-button:hover {
-    background-color: #f0f0f0;
-    transform: translateY(-2px);
-}
-
-/* Prequalification Form Styles */
-.container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 30px;
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: var(--brand-blue);
+    border: none;
 }
 
+.form-button-primary {
+    background-color: var(--brand-blue);
+    color: white;
+    border: none;
+}
+
+.form-button-secondary {
+    background-color: var(--brand-yellow);
+    color: var(--text-primary);
+    border: none;
+}
+
+/* Progress Bar */
 .progress-container {
     margin-bottom: 20px;
 }
@@ -97,185 +180,96 @@ body {
 }
 
 .progress-bar-fill {
-    background-color: #045a81;
+    background-color: var(--brand-blue);
     height: 100%;
     width: 20%;
-    transition: width 0.3s ease;
+    transition: width 0.5s ease;
 }
 
-.progress-text {
-    text-align: center;
-    font-size: 14px;
-    margin-top: 5px;
-    color: #045a81;
-    font-weight: bold;
-}
-
-h2 {
-    color: #045a81;
-    font-size: 24px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #045a81;
-    padding-bottom: 10px;
-}
-
-.section {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-.hidden {
-    display: none;
-    opacity: 0;
-}
-
-label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #444;
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    box-sizing: border-box;
-}
-
-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-input:focus, select:focus, textarea:focus {
-    border-color: #045a81;
-    outline: none;
-    box-shadow: 0 0 5px rgba(4, 90, 129, 0.3);
-}
-
-.button-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-button {
-    background-color: #045a81;
-    color: white;
-    border: none;
-    padding: 15px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 16px;
-    flex: 1;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #034669;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-.error {
-    color: #dc3545;
-    font-size: 12px;
-    margin-top: -15px;
-    margin-bottom: 15px;
-}
-
-.error-input {
-    border-color: #dc3545;
-    background-color: #fff8f8;
-}
-
-/* Payment Calculator Styles */
+/* Calculator */
 .calculator-container {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 20px;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 0.75rem;
+    border: 1px solid var(--brand-grey);
+    margin-top: 1.5rem;
 }
 
-.payment-display {
-    font-size: 32px;
-    color: #045a81;
+.calculator-result {
+    font-size: 2.25rem;
+    font-weight: 700;
     text-align: center;
-    margin: 20px 0;
-    font-weight: bold;
-}
-
-.term-slider {
-    width: 100%;
-    margin: 20px 0;
-}
-
-.rate-info {
-    background-color: #e9ecef;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    color: var(--brand-blue);
+    margin-bottom: 1.5rem;
 }
 
 /* Loading Screen */
 #loading-screen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.9);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #045a81;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid var(--brand-grey);
+    border-top-color: var(--brand-blue);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* Google Places Autocomplete */
-.pac-container {
-    z-index: 1051 !important;
+/* Validation States */
+.error-message {
+    font-size: 0.875rem;
+    color: var(--error);
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.error-input {
+    border-color: var(--error);
+}
+
+.valid-input {
+    border-color: var(--success);
+}
+
+/* Hide sections properly */
+.section.hidden {
+    display: none;
+    transform: translateX(100%);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        margin: 10px;
-        padding: 20px;
-    }
-
+@media (max-width: 640px) {
+    .container,
     .loan-widget {
         margin: 10px;
+    }
+    
+    .section {
         padding: 20px;
     }
-
-    .button-container {
-        flex-direction: column;
+    
+    .calculator-result {
+        font-size: 1.875rem;
     }
-
-    .button-container button {
-        margin: 5px 0;
+    
+    .apply-button,
+    .form-button {
+        width: 100%;
+        margin-bottom: 0.5rem;
     }
 }
