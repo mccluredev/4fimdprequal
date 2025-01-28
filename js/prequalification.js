@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressBar = document.querySelector('.progress-bar-fill');
     const progressText = document.querySelector('.progress-text');
     let currentSection = 0;
+    let isAnimating = false;
 
     // Check for loan amount in URL and redirect if not present
     const urlParams = new URLSearchParams(window.location.search);
@@ -244,37 +245,87 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
-    // Navigation event listeners
+    // Navigation event listeners with slide animations
     document.querySelectorAll('.next-button').forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', async () => {
+            if (isAnimating) return;
+            
             if (validateSection(currentSection)) {
+                isAnimating = true;
+                
                 if (currentSection === 3) {
                     // Show loading screen before calculator
                     document.getElementById('loading-screen').classList.remove('hidden');
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').classList.add('hidden');
-                        sections[currentSection].classList.add('hidden');
-                        currentSection++;
-                        sections[currentSection].classList.remove('hidden');
-                        updateProgress();
-                        updatePaymentCalculator();
-                    }, 1500);
-                } else {
-                    sections[currentSection].classList.add('hidden');
-                    currentSection++;
-                    sections[currentSection].classList.remove('hidden');
-                    updateProgress();
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    document.getElementById('loading-screen').classList.add('hidden');
                 }
+
+                const currentSect = sections[currentSection];
+                const nextSection = sections[currentSection + 1];
+
+                // Prepare next section
+                nextSection.classList.remove('hidden');
+                nextSection.classList.add('slide-enter');
+
+                // Force reflow
+                void nextSection.offsetWidth;
+
+                // Start animation
+                currentSect.classList.add('slide-exit-active');
+                nextSection.classList.add('slide-enter-active');
+
+                // Wait for animation
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Cleanup
+                currentSect.classList.add('hidden');
+                currentSect.classList.remove('slide-exit-active');
+                nextSection.classList.remove('slide-enter', 'slide-enter-active');
+
+                // Update state
+                currentSection++;
+                updateProgress();
+                
+                if (currentSection === 4) {
+                    updatePaymentCalculator();
+                }
+                
+                isAnimating = false;
             }
         });
     });
 
     document.querySelectorAll('.back-button').forEach(button => {
-        button.addEventListener('click', () => {
-            sections[currentSection].classList.add('hidden');
+        button.addEventListener('click', async () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const currentSect = sections[currentSection];
+            const prevSection = sections[currentSection - 1];
+
+            // Prepare previous section
+            prevSection.classList.remove('hidden');
+            prevSection.classList.add('slide-back-enter');
+
+            // Force reflow
+            void prevSection.offsetWidth;
+
+            // Start animation
+            currentSect.classList.add('slide-back-exit-active');
+            prevSection.classList.add('slide-back-enter-active');
+
+            // Wait for animation
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Cleanup
+            currentSect.classList.add('hidden');
+            currentSect.classList.remove('slide-back-exit-active');
+            prevSection.classList.remove('slide-back-enter', 'slide-back-enter-active');
+
+            // Update state
             currentSection--;
-            sections[currentSection].classList.remove('hidden');
             updateProgress();
+            isAnimating = false;
         });
     });
 
