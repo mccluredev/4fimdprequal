@@ -5,71 +5,79 @@
     --brand-yellow: #ffcd05;
     --brand-blue-dark: #034669;
     --error: #dc3545;
+    --success: #28a745;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Homepage Widget Styles */
+.loan-widget {
+    background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%);
+    padding: 40px;
+    border-radius: 12px;
+    color: white;
+    max-width: 500px;
+    margin: 20px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.widget-title {
+    font-size: 28px;
+    margin: 0 0 20px 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+.widget-subtitle {
+    font-size: 16px;
+    margin: 0 0 30px 0;
+    text-align: center;
+    opacity: 0.9;
 }
 
 /* Form Container */
 .form-container {
     max-width: 42rem;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
     padding: 1.5rem;
     background-color: white;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Step Indicator */
-.step-indicator {
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Progress Bar */
+.progress-container {
+    margin-bottom: 1.25rem;
 }
 
-.step-indicator-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
 }
 
-.step-indicator-circle {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.875rem;
-    font-weight: 500;
-    background-color: var(--brand-grey);
-    color: white;
-}
-
-.step-indicator-circle.active {
+.progress-bar-fill {
     background-color: var(--brand-blue);
+    height: 100%;
+    transition: width 0.5s ease;
 }
 
-.step-indicator-circle.completed {
-    background-color: var(--brand-blue-dark);
+.progress-text {
+    text-align: center;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    color: var(--brand-blue);
+    font-weight: bold;
 }
 
-.step-indicator-line {
-    flex: 1;
-    height: 0.125rem;
-    background-color: #e5e7eb;
-    margin: 0 0.5rem;
-}
-
-/* Form Sections */
-.form-section {
-    margin-bottom: 1.5rem;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-/* Input Fields */
+/* Form Elements */
 .input-group {
     position: relative;
     margin-bottom: 1.5rem;
@@ -78,24 +86,33 @@
 label {
     display: block;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--brand-grey);
     margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--brand-grey);
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e0e0e0;
     border-radius: 0.375rem;
     font-size: 1rem;
-    transition: border-color 0.15s ease-in-out;
+    transition: all 0.3s ease;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
     outline: none;
     border-color: var(--brand-blue);
     box-shadow: 0 0 0 3px rgba(4, 90, 129, 0.1);
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
 /* Currency Input */
@@ -122,20 +139,84 @@ input:focus, select:focus, textarea:focus {
 button {
     background-color: var(--brand-blue);
     color: white;
+    border: none;
     padding: 0.75rem 1.5rem;
     border-radius: 0.375rem;
+    font-size: 1rem;
     font-weight: 500;
-    border: none;
     cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: var(--brand-blue-dark);
 }
 
-button.secondary {
+button:disabled {
     background-color: var(--brand-grey);
+    cursor: not-allowed;
+}
+
+.apply-button {
+    background-color: #ffffff;
+    color: var(--brand-blue);
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.apply-button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+/* Section Styling */
+.section {
+    width: 100%;
+    position: absolute;
+    transition: transform 0.5s ease;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Slide Animation Classes */
+.slide-enter {
+    transform: translateX(100%);
+}
+
+.slide-enter-active {
+    transform: translateX(0%);
+}
+
+.slide-exit {
+    transform: translateX(0%);
+}
+
+.slide-exit-active {
+    transform: translateX(-100%);
+}
+
+.slide-back-enter {
+    transform: translateX(-100%);
+}
+
+.slide-back-enter-active {
+    transform: translateX(0%);
+}
+
+.slide-back-exit {
+    transform: translateX(0%);
+}
+
+.slide-back-exit-active {
+    transform: translateX(100%);
 }
 
 /* Error States */
@@ -150,6 +231,42 @@ button.secondary {
     background-color: #fff8f8;
 }
 
+/* Loading Screen */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--brand-blue);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Hide sections properly */
+.section.hidden {
+    display: none;
+    transform: translateX(100%);
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
     .form-container {
@@ -157,17 +274,27 @@ button.secondary {
         padding: 1rem;
     }
 
+    .loan-widget {
+        margin: 10px;
+        padding: 20px;
+    }
+
     .button-container {
         flex-direction: column;
     }
 
-    .step-indicator {
-        flex-direction: column;
-        gap: 1rem;
+    button {
+        width: 100%;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .form-container {
+        box-shadow: none;
     }
 
-    .step-indicator-line {
-        width: 0.125rem;
-        height: 1rem;
+    button {
+        display: none;
     }
 }
