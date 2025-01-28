@@ -8,18 +8,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentSection = 0;
     let isAnimating = false;
 
-    // Hide loading screen immediately on page load
+    // Hide loading screen initially
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
         loadingScreen.classList.add('hidden');
     }
 
-    // Check for loan amount in URL and redirect if not present
+    // Get and validate loan amount from URL
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
 
     if (!loanAmount) {
-        window.location.href = '/';
+        window.location.href = 'index.html';
         return;
     }
 
@@ -89,11 +89,8 @@ document.addEventListener('DOMContentLoaded', function() {
         loanPurpose.addEventListener('change', function() {
             const isOther = this.value === 'Other';
             otherPurpose.classList.toggle('hidden', !isOther);
-
-            if (isOther) {
-                otherPurposeText.setAttribute('required', 'required');
-            } else {
-                otherPurposeText.removeAttribute('required');
+            otherPurposeText.required = isOther;
+            if (!isOther) {
                 otherPurposeText.value = '';
             }
         });
@@ -108,23 +105,14 @@ document.addEventListener('DOMContentLoaded', function() {
         businessEstablished.addEventListener('change', function() {
             const isEstablished = this.value === 'Yes';
             yearsContainer.classList.toggle('hidden', !isEstablished);
-
-            if (isEstablished) {
-                yearsInput.setAttribute('required', 'required');
-            } else {
-                yearsInput.removeAttribute('required');
+            yearsInput.required = isEstablished;
+            if (!isEstablished) {
                 yearsInput.value = '';
             }
         });
     }
 
-    // Format currency inputs
-    const currencyInputs = document.querySelectorAll('.currency:not([readonly])');
-    currencyInputs.forEach(input => {
-        input.addEventListener('blur', formatCurrency);
-        input.addEventListener('focus', unformatCurrency);
-    });
-
+    // Currency formatting functions
     function formatCurrency(e) {
         let value = e.target.value.replace(/[^0-9]/g, '');
         if (value) {
@@ -142,15 +130,20 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     }
 
-    // Format phone number
+    // Add currency formatting to inputs
+    const currencyInputs = document.querySelectorAll('.currency:not([readonly])');
+    currencyInputs.forEach(input => {
+        input.addEventListener('blur', formatCurrency);
+        input.addEventListener('focus', unformatCurrency);
+    });
+
+    // Phone number formatting
     const phoneInput = document.getElementById('mobile');
     if (phoneInput) {
         phoneInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
-
-            // Restrict to 10 digits
             value = value.substring(0, 10);
-
+            
             if (value.length > 0) {
                 if (value.length <= 3) {
                     value = `(${value}`;
@@ -161,16 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             e.target.value = value;
-        });
-
-        // Prevent paste of invalid format
-        phoneInput.addEventListener('paste', function(e) {
-            e.preventDefault();
-            let pastedText = (e.clipboardData || window.clipboardData).getData('text');
-            pastedText = pastedText.replace(/\D/g, '').substring(0, 10);
-            if (pastedText.length === 10) {
-                this.value = `(${pastedText.slice(0,3)}) ${pastedText.slice(3,6)}-${pastedText.slice(6)}`;
-            }
         });
     }
 
@@ -194,17 +177,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValid = isValid && input.value.trim() !== '';
             }
 
-            if (!isValid) {
-                input.classList.add('error-input');
-            } else {
-                input.classList.remove('error-input');
-            }
+            input.classList.toggle('error-input', !isValid);
         });
 
         return isValid;
     }
 
-    // Calculate interest rate based on FICO score and loan amount
+    // Interest rate calculation
     function calculateInterestRate(creditScore, loanAmount) {
         const amount = parseInt(loanAmount.replace(/[^0-9]/g, ''));
         const score = parseInt(creditScore);
@@ -227,12 +206,12 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (score >= 640) {
             if (amount < 10000) return 18.99;
             if (amount <= 75000) return 17.99;
-            return null; // Not eligible for higher amounts
+            return null;
         }
-        return null; // Not eligible
+        return null;
     }
 
-    // Calculate monthly payment
+    // Payment calculation
     function calculateMonthlyPayment(principal, annualRate, termMonths) {
         const monthlyRate = annualRate / 100 / 12;
         const payment = principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths) / 
@@ -240,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.round(payment * 100) / 100;
     }
 
-    // Update payment calculator
+    // Update payment calculator display
     function updatePaymentCalculator() {
         const loanAmount = document.getElementById('00NHs00000lzslH').value;
         const creditScore = document.getElementById('00NHs00000m08cg').value;
@@ -268,82 +247,56 @@ document.addEventListener('DOMContentLoaded', function() {
         currentTerm.textContent = `${termSlider.value} months`;
     }
 
-    // Add term slider event listener
+    // Term slider event listener
     const termSlider = document.getElementById('term-slider');
     if (termSlider) {
         termSlider.addEventListener('input', updatePaymentCalculator);
     }
 
-    // Navigation event listeners with slide animations
+    // Navigation with animations
+    async function slideSection(direction) {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        const currentSect = sections[currentSection];
+        const nextSection = sections[currentSection + direction];
+
+        nextSection.classList.remove('hidden');
+        nextSection.classList.add(direction > 0 ? 'slide-enter' : 'slide-back-enter');
+
+        void nextSection.offsetWidth;
+
+        currentSect.classList.add(direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active');
+        nextSection.classList.add(direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active');
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        currentSect.classList.add('hidden');
+        currentSect.classList.remove(direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active');
+        nextSection.classList.remove(
+            direction > 0 ? 'slide-enter' : 'slide-back-enter',
+            direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active'
+        );
+
+        currentSection += direction;
+        updateProgress();
+        isAnimating = false;
+    }
+
+    // Add navigation button listeners
     document.querySelectorAll('.next-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            if (isAnimating || !validateSection(currentSection)) return;
-
-            isAnimating = true;
-            const currentSect = sections[currentSection];
-            const nextSection = sections[currentSection + 1];
-
-            // Prepare next section
-            nextSection.classList.remove('hidden');
-            nextSection.classList.add('slide-enter');
-
-            // Force reflow
-            void nextSection.offsetWidth;
-
-            // Start animation
-            currentSect.classList.add('slide-exit-active');
-            nextSection.classList.add('slide-enter-active');
-
-            // Wait for animation
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Cleanup
-            currentSect.classList.add('hidden');
-            currentSect.classList.remove('slide-exit-active');
-            nextSection.classList.remove('slide-enter', 'slide-enter-active');
-
-            // Update state
-            currentSection++;
-            updateProgress();
-            isAnimating = false;
+        button.addEventListener('click', () => {
+            if (validateSection(currentSection)) {
+                slideSection(1);
+            }
         });
     });
 
     document.querySelectorAll('.back-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            if (isAnimating) return;
-            isAnimating = true;
-
-            const currentSect = sections[currentSection];
-            const prevSection = sections[currentSection - 1];
-
-            // Prepare previous section
-            prevSection.classList.remove('hidden');
-            prevSection.classList.add('slide-back-enter');
-
-            // Force reflow
-            void prevSection.offsetWidth;
-
-            // Start animation
-            currentSect.classList.add('slide-back-exit-active');
-            prevSection.classList.add('slide-back-enter-active');
-
-            // Wait for animation
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Cleanup
-            currentSect.classList.add('hidden');
-            currentSect.classList.remove('slide-back-exit-active');
-            prevSection.classList.remove('slide-back-enter', 'slide-back-enter-active');
-
-            // Update state
-            currentSection--;
-            updateProgress();
-            isAnimating = false;
-        });
+        button.addEventListener('click', () => slideSection(-1));
     });
 
-    // Handle form submission
+    // Form submission handler
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -353,20 +306,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             const formData = new FormData(form);
-            const response = await fetch(form.action, {
+            const response = await fetch('submit.php', {
                 method: 'POST',
                 body: formData
             });
 
             if (response.ok) {
-                // Hide form sections
                 sections.forEach(section => section.classList.add('hidden'));
-
-                // Show and update calculator
                 paymentCalculator.classList.remove('hidden');
                 updatePaymentCalculator();
-
-                // Update progress text
                 progressText.textContent = 'Estimate Complete';
                 progressBar.style.width = '100%';
             } else {
@@ -380,13 +328,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Progress bar update
     function updateProgress() {
         const progress = ((currentSection + 1) / 4) * 100;
         progressBar.style.width = `${progress}%`;
         progressText.textContent = `Step ${currentSection + 1} of 4`;
     }
 
-    // Show first section
+    // Initialize first section
     if (sections.length > 0) {
         sections[0].classList.remove('hidden');
     }
