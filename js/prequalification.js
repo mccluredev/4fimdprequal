@@ -1,3 +1,8 @@
+// Global Turnstile callback
+window.onTurnstileSuccess = function(token) {
+    console.log('Turnstile verification successful');
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize variables
     const sections = document.querySelectorAll('.section');
@@ -5,6 +10,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressText = document.querySelector('.progress-text');
     let currentSection = 0;
     let isAnimating = false;
+
+    // Initialize Turnstile
+    if (typeof turnstile !== 'undefined') {
+        turnstile.ready(function() {
+            turnstile.render('.cf-turnstile', {
+                sitekey: '0x4AAAAAAA6JamddI1LF9dFU',
+                theme: 'light',
+                callback: function(token) {
+                    window.onTurnstileSuccess(token);
+                }
+            });
+        });
+    }
 
     // Hide loading screen immediately on page load
     const loadingScreen = document.getElementById('loading-screen');
@@ -251,117 +269,41 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
-    // Navigation event listeners with slide animations
-    document.querySelectorAll('.next-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            if (isAnimating || !validateSection(currentSection)) return;
-            
-            isAnimating = true;
-            const currentSect = sections[currentSection];
-            const nextSection = sections[currentSection + 1];
+    // Navigation Functions
+    async function nextSection() {
+        if (isAnimating || !validateSection(currentSection)) return;
+        
+        isAnimating = true;
+        const currentSect = sections[currentSection];
+        const nextSection = sections[currentSection + 1];
 
-            // Show loading screen only when going to calculator section
-            if (currentSection === 3) {
-                loadingScreen.classList.remove('hidden');
-                try {
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    updatePaymentCalculator();
-                } finally {
-                    loadingScreen.classList.add('hidden');
-                }
-            }
+        // Show loading screen for calculator
+        if (currentSection === 3) {
+            loadingScreen.classList.remove('hidden');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            updatePaymentCalculator();
+            loadingScreen.classList.add('hidden');
+        }
 
-            // Prepare next section
-            nextSection.classList.remove('hidden');
-            nextSection.classList.add('slide-enter');
-
-            // Force reflow
-            void nextSection.offsetWidth;
-
-            // Start animation
-            currentSect.classList.add('slide-exit-active');
-            nextSection.classList.add('slide-enter-active');
-
-            // Wait for animation
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Cleanup
-            currentSect.classList.add('hidden');
-            currentSect.classList.remove('slide-exit-active');
-            nextSection.classList.remove('slide-enter', 'slide-enter-active');
-
-            // Update state
-            currentSection++;
-            updateProgress();
-            isAnimating = false;
-        });
-    });
-
-    document.querySelectorAll('.back-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            if (isAnimating) return;
-            isAnimating = true;
-
-            const currentSect = sections[currentSection];
-            const prevSection = sections[currentSection - 1];
-
-            // Prepare previous section
-            prevSection.classList.remove('hidden');
-            prevSection.classList.add('slide-back-enter');
-
-            // Force reflow
-            void prevSection.offsetWidth;
-
-            // Start animation
-            currentSect.classList.add('slide-back-exit-active');
-            prevSection.classList.add('slide-back-enter-active');
-
-            // Wait for animation
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Cleanup
-            currentSect.classList.add('hidden');
-            currentSect.classList.remove('slide-back-exit-active');
-            prevSection.classList.remove('slide-back-enter', 'slide-back-enter-active');
-
-            // Update state
-            currentSection--;
-            updateProgress();
-            isAnimating = false;
-        });
-    });
-
-    // Term slider event listener
-    const termSlider = document.getElementById('term-slider');
-    termSlider.addEventListener('input', updatePaymentCalculator);
-
-    function updateProgress() {
-        const progress = ((currentSection + 1) / sections.length) * 100;
-        progressBar.style.width = `${progress}%`;
-        progressText.textContent = `Step ${currentSection + 1} of ${sections.length}`;
+        // Animation sequence
+        currentSect.style.transform = 'translateX(0)';
+        nextSection.classList.remove('hidden');
+        nextSection.style.transform = 'translateX(100%)';
+        
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        currentSect.style.transform = 'translateX(-100%)';
+        nextSection.style.transform = 'translateX(0)';
+        currentSect.style.opacity = '0';
+        nextSection.style.opacity = '1';
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        currentSect.classList.add('hidden');
+        currentSection++;
+        updateProgress();
+        isAnimating = false;
     }
-    
-<script>
-function onTurnstileSuccess(token) {
-    // Handle the token if needed
-    console.log('Turnstile verification successful');
-}
 
-window.onloadTurnstileCallback = function() {
-    turnstile.ready(function() {
-        turnstile.render('.cf-turnstile', {
-            sitekey: '0x4AAAAAAA6JamddI1LF9dFU',
-            theme: 'light',
-            callback: function(token) {
-                onTurnstileSuccess(token);
-            }
-        });
-    });
-};
-
-    // Show first section
-    if (sections.length > 0) {
-        sections[0].classList.remove('hidden');
-    }
-    updateProgress();
-});
+    async function previousSection() {
+        if (isAnimating || currentSection
