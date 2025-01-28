@@ -12,8 +12,20 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
-    padding: 0;
+    padding: 20px;
     color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Container Styles */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    flex: 1;
 }
 
 /* Homepage Widget Styles */
@@ -41,19 +53,10 @@ body {
     opacity: 0.9;
 }
 
-/* Form Container */
-.form-container {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: 1.5rem;
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
 /* Progress Bar */
 .progress-container {
-    margin-bottom: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto 1.25rem;
 }
 
 .progress-bar {
@@ -83,6 +86,11 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+}
+
 label {
     display: block;
     font-size: 0.875rem;
@@ -100,6 +108,7 @@ textarea {
     border-radius: 0.375rem;
     font-size: 1rem;
     transition: all 0.3s ease;
+    background-color: white;
 }
 
 input:focus,
@@ -115,18 +124,9 @@ textarea {
     resize: vertical;
 }
 
-/* Currency Input */
+/* Remove currency symbol positioning */
 .currency-symbol {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--brand-blue);
-    font-weight: bold;
-}
-
-.currency-input {
-    padding-left: 2rem;
+    display: none;
 }
 
 /* Buttons */
@@ -134,6 +134,7 @@ textarea {
     display: flex;
     gap: 1rem;
     margin-top: 1.5rem;
+    justify-content: space-between;
 }
 
 button {
@@ -177,8 +178,9 @@ button:disabled {
 
 /* Section Styling */
 .section {
-    width: 100%;
-    position: absolute;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
     transition: transform 0.5s ease;
     padding: 30px;
     background-color: white;
@@ -186,37 +188,29 @@ button:disabled {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Slide Animation Classes */
-.slide-enter {
-    transform: translateX(100%);
+/* Calculator Styles */
+.calculator-container {
+    text-align: center;
+    padding: 20px;
 }
 
-.slide-enter-active {
-    transform: translateX(0%);
+.rate-info {
+    margin-bottom: 20px;
 }
 
-.slide-exit {
-    transform: translateX(0%);
+.payment-display {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--brand-blue);
+    margin: 20px 0;
 }
 
-.slide-exit-active {
-    transform: translateX(-100%);
-}
-
-.slide-back-enter {
-    transform: translateX(-100%);
-}
-
-.slide-back-enter-active {
-    transform: translateX(0%);
-}
-
-.slide-back-exit {
-    transform: translateX(0%);
-}
-
-.slide-back-exit-active {
-    transform: translateX(100%);
+.term-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    color: var(--brand-grey);
+    font-size: 14px;
 }
 
 /* Error States */
@@ -224,6 +218,7 @@ button:disabled {
     color: var(--error);
     font-size: 0.75rem;
     margin-top: 0.25rem;
+    display: none;
 }
 
 .error-input {
@@ -243,7 +238,7 @@ button:disabled {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 9999;  /* Increased to ensure it's above all content */
+    z-index: 9999;
     transition: opacity 0.3s ease;
 }
 
@@ -269,31 +264,33 @@ button:disabled {
     100% { transform: rotate(360deg); }
 }
 
-/* Make sure this is defined if not already present */
 .hidden {
     display: none !important;
 }
 
-/* Update container positioning */
-.container {
-    position: relative;
-}
-
-/* Hide sections properly */
-.section.hidden {
-    display: none;
-    transform: translateX(100%);
+/* Cloudflare Turnstile */
+.cf-turnstile {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
 }
 
 /* Responsive Design */
 @media (max-width: 640px) {
-    .form-container {
-        margin: 1rem;
-        padding: 1rem;
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 10px;
     }
 
     .loan-widget {
         margin: 10px;
+        padding: 20px;
+    }
+
+    .section {
         padding: 20px;
     }
 
