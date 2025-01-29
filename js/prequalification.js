@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => slideSection(-1));
     });
 
-    // Form submission handler for Salesforce
+   // Form submission handler for Salesforce
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -314,17 +314,31 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.remove('hidden');
 
         try {
-            // Show calculator before form submission
+            // Submit to Salesforce first
+            await new Promise((resolve, reject) => {
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Form submission failed');
+                    }
+                    resolve();
+                })
+                .catch(error => reject(error));
+            });
+
+            // After successful submission, show calculator
             sections.forEach(section => section.classList.add('hidden'));
             paymentCalculator.classList.remove('hidden');
             updatePaymentCalculator();
             progressText.textContent = 'Estimate Complete';
             progressBar.style.width = '100%';
 
-            // Submit to Salesforce after showing calculator
-            setTimeout(() => {
-                form.submit(); // This will redirect to the retURL specified in the form
-            }, 2000); // Give user 2 seconds to see their estimate
+            // Update URL without redirecting
+            window.history.pushState({}, '', 'prequalification.html?showCalculator=true');
 
         } catch (error) {
             console.error('Submission error:', error);
