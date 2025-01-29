@@ -339,14 +339,8 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => slideSection(-1));
     });
 
-   // Update the hidden return URL field
-    const returnUrlInput = document.querySelector('input[name="retURL"]');
-    const baseUrl = 'https://mccluredev.github.io/4fimdprequal';
-    const calculatorURL = `${baseUrl}/prequalification.html?showCalculator=true`;
-    returnUrlInput.value = calculatorURL;
-
-    // Form submission handler
-    form.addEventListener('submit', async function(e) {
+  // Form submission handler
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (!validateSection(currentSection)) return;
@@ -354,14 +348,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading screen
         loadingScreen.classList.remove('hidden');
 
-        try {
-            // Use direct form submission
-            form.submit();
-        } catch (error) {
-            console.error('Submission error:', error);
-            alert('There was an error submitting your application. Please try again.');
-            loadingScreen.classList.add('hidden');
-        }
+        // Update return URL before submission
+        const returnUrlInput = document.querySelector('input[name="retURL"]');
+        returnUrlInput.value = 'https://mccluredev.github.io/4fimdprequal/prequalification.html?showCalculator=true';
+
+        // Simple form submission
+        form.submit();
     });
 
             // Check if submission was successful
