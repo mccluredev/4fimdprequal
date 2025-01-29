@@ -379,4 +379,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Progress bar update
     function updateProgress() {
-        const progress = ((currentSection + 1) / 4) * 100
+        const progress = ((currentSection + 1) / 4) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `Step ${currentSection + 1} of 4`;
+    }
+
+    // Show first section and initialize progress
+    if (sections.length > 0 && !showCalculator) {
+        sections[0].classList.remove('hidden');
+        updateProgress();
+    }
+});
