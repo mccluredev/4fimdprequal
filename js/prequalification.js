@@ -339,6 +339,11 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => slideSection(-1));
     });
 
+    // Update the hidden return URL field
+    const returnUrlInput = document.querySelector('input[name="retURL"]');
+    const currentDomain = window.location.origin;
+    returnUrlInput.value = `${currentDomain}/prequalification.html?showCalculator=true`;
+
     // Form submission handler
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -349,8 +354,22 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.remove('hidden');
 
         try {
-            // Submit form directly to allow Salesforce to handle the redirect
-            form.submit();
+            // Get the form data
+            const formData = new FormData(form);
+            
+            // Submit form to Salesforce
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            // Check if submission was successful
+            if (response.ok) {
+                // Redirect to the calculator page
+                window.location.href = returnUrlInput.value;
+            } else {
+                throw new Error('Form submission failed');
+            }
         } catch (error) {
             console.error('Submission error:', error);
             alert('There was an error submitting your application. Please try again.');
@@ -360,14 +379,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Progress bar update
     function updateProgress() {
-        const progress = ((currentSection + 1) / 4) * 100;
-        progressBar.style.width = `${progress}%`;
-        progressText.textContent = `Step ${currentSection + 1} of 4`;
-    }
-
-    // Show first section
-    if (sections.length > 0 && !showCalculator) {
-        sections[0].classList.remove('hidden');
-        updateProgress();
-    }
-});
+        const progress = ((currentSection + 1) / 4) * 100
