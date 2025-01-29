@@ -341,8 +341,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
    // Update the hidden return URL field
     const returnUrlInput = document.querySelector('input[name="retURL"]');
-    const currentDomain = window.location.origin;
-    const calculatorURL = currentDomain + '/prequalification.html?showCalculator=true';
+    const baseUrl = 'https://mccluredev.github.io/4fimdprequal';
+    const calculatorURL = `${baseUrl}/prequalification.html?showCalculator=true`;
     returnUrlInput.value = calculatorURL;
 
     // Form submission handler
@@ -355,10 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.remove('hidden');
 
         try {
-            // Get the form data
-            const formData = new FormData(form);
-            
-            // Submit form to Salesforce
+            // Use direct form submission
             form.submit();
         } catch (error) {
             console.error('Submission error:', error);
