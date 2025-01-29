@@ -14,105 +14,71 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.add('hidden');
     }
 
-    // Check for calculator parameter in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const showCalculator = urlParams.get('showCalculator');
-    
-    if (showCalculator === 'true') {
-        // Hide all sections
-        sections.forEach(section => section.classList.add('hidden'));
-        
-        // Show calculator
-        paymentCalculator.classList.remove('hidden');
-        
-        // Update progress
-        progressText.textContent = 'Estimate Complete';
-        progressBar.style.width = '100%';
-        
-        // Update calculator
-        updatePaymentCalculator();
-        
-        // Clean up URL
-        window.history.replaceState({}, document.title, 'prequalification.html');
-        return; // Exit early as we're showing the calculator
-    }
-
     // Check for loan amount in URL and redirect if not present
+    const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
-    if (!loanAmount && !showCalculator) {
+
+    if (!loanAmount) {
         window.location.href = 'index.html';
         return;
     }
 
     // Format and set the loan amount
-    if (loanAmount) {
-        const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
+    const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
 
-        const loanAmountInput = document.getElementById('00NHs00000lzslH');
-        if (loanAmountInput) {
-            loanAmountInput.value = formattedAmount;
-        }
+    const loanAmountInput = document.getElementById('00NHs00000lzslH');
+    if (loanAmountInput) {
+        loanAmountInput.value = formattedAmount;
     }
 
     // Initialize Google Places Autocomplete
-    function initializeGooglePlaces() {
-        const autocompleteInput = document.getElementById('autocomplete');
-        if (autocompleteInput && window.google && window.google.maps && window.google.maps.places) {
-            const autocomplete = new google.maps.places.Autocomplete(
-                autocompleteInput,
-                {types: ['address'], componentRestrictions: {country: 'US'}}
-            );
+    const autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('autocomplete'),
+        {types: ['address'], componentRestrictions: {country: 'US'}}
+    );
 
-            // Handle address selection
-            autocomplete.addListener('place_changed', function() {
-                const place = autocomplete.getPlace();
-                let streetNumber = '';
-                let route = '';
-                let city = '';
-                let state = '';
-                let zipCode = '';
+    // Handle address selection
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        let streetNumber = '';
+        let route = '';
+        let city = '';
+        let state = '';
+        let zipCode = '';
 
-                // Parse address components
-                for (const component of place.address_components) {
-                    const type = component.types[0];
-                    switch (type) {
-                        case 'street_number':
-                            streetNumber = component.long_name;
-                            break;
-                        case 'route':
-                            route = component.long_name;
-                            break;
-                        case 'locality':
-                            city = component.long_name;
-                            break;
-                        case 'administrative_area_level_1':
-                            state = component.short_name;
-                            break;
-                        case 'postal_code':
-                            zipCode = component.long_name;
-                            break;
-                    }
-                }
-
-                // Set hidden field values
-                document.getElementById('street').value = `${streetNumber} ${route}`.trim();
-                document.getElementById('city').value = city;
-                document.getElementById('state').value = state;
-                document.getElementById('zip').value = zipCode;
-            });
-        } else {
-            // If Google Maps API hasn't loaded yet, try again in 1 second
-            setTimeout(initializeGooglePlaces, 1000);
+        // Parse address components
+        for (const component of place.address_components) {
+            const type = component.types[0];
+            switch (type) {
+                case 'street_number':
+                    streetNumber = component.long_name;
+                    break;
+                case 'route':
+                    route = component.long_name;
+                    break;
+                case 'locality':
+                    city = component.long_name;
+                    break;
+                case 'administrative_area_level_1':
+                    state = component.short_name;
+                    break;
+                case 'postal_code':
+                    zipCode = component.long_name;
+                    break;
+            }
         }
-    }
 
-    // Start the Google Places initialization process
-    initializeGooglePlaces();
+        // Set hidden field values
+        document.getElementById('street').value = `${streetNumber} ${route}`.trim();
+        document.getElementById('city').value = city;
+        document.getElementById('state').value = state;
+        document.getElementById('zip').value = zipCode;
+    });
 
     // Handle loan purpose selection
     const loanPurpose = document.getElementById('00NHs00000scaqg');
@@ -339,33 +305,31 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => slideSection(-1));
     });
 
-  // Form submission handler
-    form.addEventListener('submit', function(e) {
+    // Form submission handler for Salesforce
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+
         if (!validateSection(currentSection)) return;
 
-        // Show loading screen
         loadingScreen.classList.remove('hidden');
 
-        // Update return URL before submission
-        const returnUrlInput = document.querySelector('input[name="retURL"]');
-        returnUrlInput.value = 'https://mccluredev.github.io/4fimdprequal/prequalification.html?showCalculator=true';
+        try {
+            // Show calculator before form submission
+            sections.forEach(section => section.classList.add('hidden'));
+            paymentCalculator.classList.remove('hidden');
+            updatePaymentCalculator();
+            progressText.textContent = 'Estimate Complete';
+            progressBar.style.width = '100%';
 
-        // Simple form submission
-        form.submit();
-    });
+            // Submit to Salesforce after showing calculator
+            setTimeout(() => {
+                form.submit(); // This will redirect to the retURL specified in the form
+            }, 2000); // Give user 2 seconds to see their estimate
 
-            // Check if submission was successful
-            if (response.ok) {
-                // Redirect to the calculator page
-                window.location.href = returnUrlInput.value;
-            } else {
-                throw new Error('Form submission failed');
-            }
         } catch (error) {
             console.error('Submission error:', error);
             alert('There was an error submitting your application. Please try again.');
+        } finally {
             loadingScreen.classList.add('hidden');
         }
     });
@@ -377,9 +341,9 @@ document.addEventListener('DOMContentLoaded', function() {
         progressText.textContent = `Step ${currentSection + 1} of 4`;
     }
 
-    // Show first section and initialize progress
-    if (sections.length > 0 && !showCalculator) {
+    // Show first section
+    if (sections.length > 0) {
         sections[0].classList.remove('hidden');
-        updateProgress();
     }
+    updateProgress();
 });
