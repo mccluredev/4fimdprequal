@@ -14,6 +14,61 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.add('hidden');
     }
 
+    // Google Places Initialization
+    function initializeGooglePlaces() {
+        const autocompleteInput = document.getElementById('autocomplete');
+        if (autocompleteInput && window.google && window.google.maps && window.google.maps.places) {
+            const autocomplete = new google.maps.places.Autocomplete(
+                autocompleteInput,
+                {types: ['address'], componentRestrictions: {country: 'US'}}
+            );
+
+            // Handle address selection
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                let streetNumber = '';
+                let route = '';
+                let city = '';
+                let state = '';
+                let zipCode = '';
+
+                // Parse address components
+                for (const component of place.address_components) {
+                    const type = component.types[0];
+                    switch (type) {
+                        case 'street_number':
+                            streetNumber = component.long_name;
+                            break;
+                        case 'route':
+                            route = component.long_name;
+                            break;
+                        case 'locality':
+                            city = component.long_name;
+                            break;
+                        case 'administrative_area_level_1':
+                            state = component.short_name;
+                            break;
+                        case 'postal_code':
+                            zipCode = component.long_name;
+                            break;
+                    }
+                }
+
+                // Set hidden field values
+                document.getElementById('street').value = `${streetNumber} ${route}`.trim();
+                document.getElementById('city').value = city;
+                document.getElementById('state').value = state;
+                document.getElementById('zip').value = zipCode;
+            });
+        } else {
+            // If Google Maps API hasn't loaded yet, try again in 1 second
+            setTimeout(initializeGooglePlaces, 1000);
+        }
+    }
+
+    // Start the Google Places initialization process
+    initializeGooglePlaces();
+
     // Check for loan amount in URL and redirect if not present
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
@@ -35,50 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loanAmountInput) {
         loanAmountInput.value = formattedAmount;
     }
-
-    // Initialize Google Places Autocomplete
-    const autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById('autocomplete'),
-        {types: ['address'], componentRestrictions: {country: 'US'}}
-    );
-
-    // Handle address selection
-    autocomplete.addListener('place_changed', function() {
-        const place = autocomplete.getPlace();
-        let streetNumber = '';
-        let route = '';
-        let city = '';
-        let state = '';
-        let zipCode = '';
-
-        // Parse address components
-        for (const component of place.address_components) {
-            const type = component.types[0];
-            switch (type) {
-                case 'street_number':
-                    streetNumber = component.long_name;
-                    break;
-                case 'route':
-                    route = component.long_name;
-                    break;
-                case 'locality':
-                    city = component.long_name;
-                    break;
-                case 'administrative_area_level_1':
-                    state = component.short_name;
-                    break;
-                case 'postal_code':
-                    zipCode = component.long_name;
-                    break;
-            }
-        }
-
-        // Set hidden field values
-        document.getElementById('street').value = `${streetNumber} ${route}`.trim();
-        document.getElementById('city').value = city;
-        document.getElementById('state').value = state;
-        document.getElementById('zip').value = zipCode;
-    });
 
     // Handle loan purpose selection
     const loanPurpose = document.getElementById('00NHs00000scaqg');
@@ -305,10 +316,10 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => slideSection(-1));
     });
 
-    // Form submission handler for Salesforce
+    // Form submission handler
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
-
+        
         if (!validateSection(currentSection)) return;
 
         // Show loading screen
@@ -319,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(form);
 
             // Send data to Salesforce
-            await fetch('https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8', {
+            const response = await fetch('https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8', {
                 method: 'POST',
                 body: formData
             });
