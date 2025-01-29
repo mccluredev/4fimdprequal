@@ -311,25 +311,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!validateSection(currentSection)) return;
 
+        // Show loading screen
         loadingScreen.classList.remove('hidden');
 
         try {
-            // Show calculator before form submission
+            // Hide form sections
             sections.forEach(section => section.classList.add('hidden'));
+
+            // Create a FormData object
+            const formData = new FormData(form);
+
+            // Submit the form data
+            await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            // Hide loading screen and show calculator
+            loadingScreen.classList.add('hidden');
             paymentCalculator.classList.remove('hidden');
             updatePaymentCalculator();
             progressText.textContent = 'Estimate Complete';
             progressBar.style.width = '100%';
 
-            // Submit to Salesforce after showing calculator
-            setTimeout(() => {
-                form.submit(); // This will redirect to the retURL specified in the form
-            }, 2000); // Give user 2 seconds to see their estimate
-
         } catch (error) {
             console.error('Submission error:', error);
             alert('There was an error submitting your application. Please try again.');
-        } finally {
             loadingScreen.classList.add('hidden');
         }
     });
