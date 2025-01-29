@@ -14,7 +14,52 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.add('hidden');
     }
 
-    // Google Places Initialization
+    // Check for calculator parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const showCalculator = urlParams.get('showCalculator');
+    
+    if (showCalculator === 'true') {
+        // Hide all sections
+        sections.forEach(section => section.classList.add('hidden'));
+        
+        // Show calculator
+        paymentCalculator.classList.remove('hidden');
+        
+        // Update progress
+        progressText.textContent = 'Estimate Complete';
+        progressBar.style.width = '100%';
+        
+        // Update calculator
+        updatePaymentCalculator();
+        
+        // Clean up URL
+        window.history.replaceState({}, document.title, 'prequalification.html');
+        return; // Exit early as we're showing the calculator
+    }
+
+    // Check for loan amount in URL and redirect if not present
+    const loanAmount = urlParams.get('amount');
+    if (!loanAmount && !showCalculator) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Format and set the loan amount
+    if (loanAmount) {
+        const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        const loanAmountInput = document.getElementById('00NHs00000lzslH');
+        if (loanAmountInput) {
+            loanAmountInput.value = formattedAmount;
+        }
+    }
+
+    // Initialize Google Places Autocomplete
     function initializeGooglePlaces() {
         const autocompleteInput = document.getElementById('autocomplete');
         if (autocompleteInput && window.google && window.google.maps && window.google.maps.places) {
@@ -68,28 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Start the Google Places initialization process
     initializeGooglePlaces();
-
-    // Check for loan amount in URL and redirect if not present
-    const urlParams = new URLSearchParams(window.location.search);
-    const loanAmount = urlParams.get('amount');
-
-    if (!loanAmount) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    // Format and set the loan amount
-    const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-
-    const loanAmountInput = document.getElementById('00NHs00000lzslH');
-    if (loanAmountInput) {
-        loanAmountInput.value = formattedAmount;
-    }
 
     // Handle loan purpose selection
     const loanPurpose = document.getElementById('00NHs00000scaqg');
@@ -326,26 +349,11 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.remove('hidden');
 
         try {
-            // Get form data
-            const formData = new FormData(form);
-
-            // Send data to Salesforce
-            const response = await fetch('https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8', {
-                method: 'POST',
-                body: formData
-            });
-
-            // Hide form sections and show calculator
-            sections.forEach(section => section.classList.add('hidden'));
-            paymentCalculator.classList.remove('hidden');
-            updatePaymentCalculator();
-            progressText.textContent = 'Estimate Complete';
-            progressBar.style.width = '100%';
-
+            // Submit form directly to allow Salesforce to handle the redirect
+            form.submit();
         } catch (error) {
             console.error('Submission error:', error);
             alert('There was an error submitting your application. Please try again.');
-        } finally {
             loadingScreen.classList.add('hidden');
         }
     });
@@ -358,8 +366,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Show first section
-    if (sections.length > 0) {
+    if (sections.length > 0 && !showCalculator) {
         sections[0].classList.remove('hidden');
+        updateProgress();
     }
-    updateProgress();
 });
