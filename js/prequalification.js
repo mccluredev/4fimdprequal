@@ -315,20 +315,17 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.remove('hidden');
 
         try {
-            // Hide form sections
-            sections.forEach(section => section.classList.add('hidden'));
-
-            // Create a FormData object
+            // Get form data
             const formData = new FormData(form);
 
-            // Submit the form data
-            await fetch(form.action, {
+            // Send data to Salesforce
+            await fetch('https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8', {
                 method: 'POST',
                 body: formData
             });
 
-            // Hide loading screen and show calculator
-            loadingScreen.classList.add('hidden');
+            // Hide form sections and show calculator
+            sections.forEach(section => section.classList.add('hidden'));
             paymentCalculator.classList.remove('hidden');
             updatePaymentCalculator();
             progressText.textContent = 'Estimate Complete';
@@ -337,6 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Submission error:', error);
             alert('There was an error submitting your application. Please try again.');
+        } finally {
             loadingScreen.classList.add('hidden');
         }
     });
