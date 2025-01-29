@@ -339,10 +339,11 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => slideSection(-1));
     });
 
-    // Update the hidden return URL field
+   // Update the hidden return URL field
     const returnUrlInput = document.querySelector('input[name="retURL"]');
     const currentDomain = window.location.origin;
-    returnUrlInput.value = `${currentDomain}/prequalification.html?showCalculator=true`;
+    const calculatorURL = currentDomain + '/prequalification.html?showCalculator=true';
+    returnUrlInput.value = calculatorURL;
 
     // Form submission handler
     form.addEventListener('submit', async function(e) {
@@ -358,10 +359,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(form);
             
             // Submit form to Salesforce
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData
-            });
+            form.submit();
+        } catch (error) {
+            console.error('Submission error:', error);
+            alert('There was an error submitting your application. Please try again.');
+            loadingScreen.classList.add('hidden');
+        }
+    });
 
             // Check if submission was successful
             if (response.ok) {
