@@ -222,9 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form validation
-// Form validation
-function validateSection(section) {
-    console.log("Validating section:", section); // Log which section is being validated
+window.validateSection = function(section) {
+    console.log("Validating section:", section); // Debugging
 
     if (!section) {
         console.error("Error: Section is undefined or null.");
@@ -256,7 +255,6 @@ function validateSection(section) {
             console.log("General field validation result:", input.value.trim() !== '');
         }
 
-        // Toggle error class and log it
         const hasError = !isValid;
         input.classList.toggle('error-input', hasError);
         if (hasError) {
@@ -267,11 +265,10 @@ function validateSection(section) {
     console.log("Final validation result for section:", isValid ? "✅ Passed" : "❌ Failed");
 
     return isValid;
-}
+};
 
-// Make function globally available
-window.validateSection = validateSection;
-console.log("validateSection function is now globally available.");
+console.log("✅ validateSection function is now globally available.");
+
 
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
