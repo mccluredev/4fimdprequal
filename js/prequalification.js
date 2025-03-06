@@ -304,7 +304,7 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
 
     // Add navigation button listeners
 
-  document.addEventListener('DOMContentLoaded', function () {
+ document.addEventListener('DOMContentLoaded', function () {
     console.log("Script Loaded - Attaching Next Button Listeners");
 
     document.querySelectorAll('.next-button').forEach(button => {
@@ -312,20 +312,27 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
 
         button.addEventListener('click', (e) => {
             e.preventDefault(); // Prevent form submission
-
+            
             console.log("Next button clicked!");
 
             const sections = document.querySelectorAll('.section');
             let currentSection = [...sections].find(section => !section.classList.contains('hidden'));
 
-            console.log("Current Section:", currentSection);
+            if (!currentSection) {
+                console.error("ERROR: No visible section found!");
+                return;
+            }
 
             if (validateSection(currentSection)) {
+                console.log("Validation passed, moving to next section...");
                 goToNextSection(currentSection);
+            } else {
+                console.error("Validation failed. Check required fields.");
             }
         });
     });
 });
+
 
 
 function goToNextSection(currentSection) {
