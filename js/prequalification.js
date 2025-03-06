@@ -38,35 +38,36 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
         loanAmountInput.value = formattedAmount;
     }
 
-  // Initialize Google Places Autocomplete safely
-// Initialize Google Places Autocomplete safely
-if (typeof google !== 'undefined' && google.maps && google.maps.places) {
-    try {
-        const autocomplete = new google.maps.places.Autocomplete(
-            document.getElementById('autocomplete'),
-            { types: ['address'], componentRestrictions: { country: 'US' } }
-        );
+// Ensure the script runs only after the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script loaded and running!");
 
-        if (autocomplete) {
-            console.log("Google Autocomplete initialized successfully.");
+    let input = document.getElementById("autocomplete");
 
-            // Ensure `addListener` exists before calling it
-            if (typeof autocomplete.addListener === 'function') {
-                autocomplete.addListener('place_changed', () => {
-                    console.log("Place changed event triggered.");
-                });
-            } else {
-                console.warn("autocomplete.addListener is not a function. Skipping.");
-            }
-        } else {
-            console.warn("Autocomplete instance was not created.");
-        }
-    } catch (error) {
-        console.error("Google API encountered an error:", error);
+    // Ensure input exists before initializing autocomplete
+    if (!input) {
+        console.error("Autocomplete input field not found!");
+        return;
     }
-} else {
-    console.warn("Google API is not available. Skipping autocomplete initialization.");
-}
+
+    // Check if Google API is available before initializing
+    if (window.google && google.maps && google.maps.places) {
+        console.log("Google API detected, initializing autocomplete...");
+
+        let autocomplete = new google.maps.places.Autocomplete(input, {
+            types: ["address"],
+            componentRestrictions: { country: "US" },
+        });
+
+        autocomplete.addListener("place_changed", function () {
+            let place = autocomplete.getPlace();
+            console.log("Address selected: ", place.formatted_address);
+        });
+
+    } else {
+        console.error("Google API is not available. Skipping autocomplete initialization.");
+    }
+});
 
     // Handle address selection
     autocomplete.addListener('place_changed', function() {
