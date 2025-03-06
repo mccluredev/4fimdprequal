@@ -51,23 +51,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Check if Google API is available before initializing
-    if (window.google && google.maps && google.maps.places) {
-        console.log("Google API detected, initializing autocomplete...");
-
-        let autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ["address"],
-            componentRestrictions: { country: "US" },
-        });
-
-        autocomplete.addListener("place_changed", function () {
-            let place = autocomplete.getPlace();
-            console.log("Address selected: ", place.formatted_address);
-        });
-
-    } else {
-        console.error("Google API is not available. Skipping autocomplete initialization.");
+    function initializeGooglePlaces() {
+    if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+        console.error("Google Maps API is not available. Skipping autocomplete initialization.");
+        return;
     }
-});
+
+    const input = document.getElementById('autocomplete');
+    if (input) {
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+            types: ['address'],
+            componentRestrictions: { country: 'US' }
+        });
+    } else {
+        console.error("Autocomplete input field not found.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
 
     // Handle address selection
     autocomplete.addListener('place_changed', function() {
@@ -333,32 +334,28 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Script Loaded - Attaching Next Button Listeners");
 
     document.querySelectorAll('.next-button').forEach(button => {
-        console.log("Found Next Button - Attaching Click Event");
+    console.log("Next button found – Attaching event listener");
 
-        button.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent form submission
-            
-            console.log("Next button clicked!");
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log("Next button clicked!");
 
-            const sections = document.querySelectorAll('.section');
-            let currentSection = [...sections].find(section => !section.classList.contains('hidden'));
+        const sections = document.querySelectorAll('.section');
+        let currentSection = [...sections].find(section => !section.classList.contains('hidden'));
 
-            if (!currentSection) {
-                console.error("ERROR: No visible section found!");
-                return;
-            }
+        if (!currentSection) {
+            console.error("No visible section found!");
+            return;
+        }
 
-            if (validateSection(currentSection)) {
-                console.log("Validation passed, moving to next section...");
-                goToNextSection(currentSection);
-            } else {
-                console.error("Validation failed. Check required fields.");
-            }
-        });
+        if (validateSection(currentSection)) {
+            console.log("Validation passed, moving to next section...");
+            goToNextSection(currentSection);
+        } else {
+            console.error("Validation failed. Check required fields.");
+        }
     });
 });
-
-
 
 function goToNextSection(currentSection) {
     const nextSection = currentSection.nextElementSibling;
