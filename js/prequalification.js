@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
 }
 
-document.getElementById('loan-amount').value = loanAmount;
+document.getElementById('00NHs00000lzslH').value = loanAmount;
 
     // Format and set the loan amount
     const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
