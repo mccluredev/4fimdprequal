@@ -303,6 +303,13 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
     }
 
     // Add navigation button listeners
+
+    document.querySelectorAll('.next-button').forEach(button => {
+    button.addEventListener('click', () => {
+        console.log("Next button clicked!");
+    });
+});
+
   document.querySelectorAll('.next-button').forEach(button => {
     button.addEventListener('click', () => {
         const sections = document.querySelectorAll('.section');
