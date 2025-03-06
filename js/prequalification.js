@@ -222,9 +222,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form validation
-   window.validateSection = function(section) {
-       console.log("validateSection function is loaded"); // Debugging log
-       const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+ function validateSection(section) {
+    console.log("validateSection function is loaded"); // Debugging Log
+    const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
     let isValid = true;
 
     inputs.forEach(input => {
@@ -240,11 +240,15 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             isValid = isValid && input.value.trim() !== '';
         }
+
         input.classList.toggle('error-input', !isValid);
     });
 
     return isValid;
-};
+}
+
+console.log("prequalification.js is loaded successfully");
+
 
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
