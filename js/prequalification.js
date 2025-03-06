@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form validation
-    function validateSection(section) {
+   window.validateSection = function(section) {
     const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
     let isValid = true;
 
@@ -239,12 +239,11 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             isValid = isValid && input.value.trim() !== '';
         }
-
         input.classList.toggle('error-input', !isValid);
     });
 
     return isValid;
-}
+};
 
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
