@@ -223,7 +223,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Form validation
    window.validateSection = function(section) {
-    const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+       console.log("validateSection function is loaded"); // Debugging log
+       const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
     let isValid = true;
 
     inputs.forEach(input => {
