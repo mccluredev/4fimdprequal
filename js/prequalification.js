@@ -304,21 +304,27 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
 
     // Add navigation button listeners
 
+   document.addEventListener('DOMContentLoaded', function () {
+    console.log("Script Loaded - Attaching Next Button Listeners");
+
     document.querySelectorAll('.next-button').forEach(button => {
-    button.addEventListener('click', () => {
-        console.log("Next button clicked!");
+        console.log("Found Next Button - Attaching Click Event");
+
+        button.addEventListener('click', () => {
+            console.log("Next button clicked!");
+
+            const sections = document.querySelectorAll('.section');
+            let currentSection = [...sections].find(section => !section.classList.contains('hidden'));
+
+            console.log("Current Section:", currentSection);
+
+            if (validateSection(currentSection)) {
+                goToNextSection(currentSection);
+            }
+        });
     });
 });
 
-  document.querySelectorAll('.next-button').forEach(button => {
-    button.addEventListener('click', () => {
-        const sections = document.querySelectorAll('.section');
-        let currentSection = [...sections].find(section => !section.classList.contains('hidden'));
-        if (validateSection(currentSection)) {
-            goToNextSection(currentSection);
-        }
-    });
-});
 function goToNextSection(currentSection) {
     const nextSection = currentSection.nextElementSibling;
 
