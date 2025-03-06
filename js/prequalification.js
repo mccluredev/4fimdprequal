@@ -435,4 +435,4 @@ function validateSection(section) {
         sections[0].classList.remove('hidden');
     }
     updateProgress();
-});
+})
