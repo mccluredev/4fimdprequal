@@ -43,16 +43,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (!validateAmount(amountInput.value)) {
-                errorMessage.style.display = 'block';
-                return;
-            }
-            errorMessage.style.display = 'none';
-            window.location.href = `./prequalification.html?amount=${encodeURIComponent(amountInput.value)}`;
-        });
-    }
+        form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+    }).then(() => {
+        window.location.href = `payment-calculator.html?amount=${loanAmount}`;
+    }).catch(() => {
+        alert("There was an error submitting your application. Please try again.");
+    });
+});
+
 
     // Prequalification page functionality
     if (prequalForm) {
