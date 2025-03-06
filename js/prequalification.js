@@ -222,30 +222,29 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form validation
-    function validateSection(sectionIndex) {
-        const section = sections[sectionIndex];
-        const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
-        let isValid = true;
+    function validateSection(section) {
+    const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+    let isValid = true;
 
-        inputs.forEach(input => {
-            if (input.type === 'email') {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                isValid = isValid && emailRegex.test(input.value);
-            } else if (input.type === 'tel') {
-                const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-                isValid = isValid && phoneRegex.test(input.value);
-            } else if (input.classList.contains('currency')) {
-                const value = parseInt(input.value.replace(/[^0-9]/g, ''));
-                isValid = isValid && !isNaN(value) && value > 0;
-            } else {
-                isValid = isValid && input.value.trim() !== '';
-            }
+    inputs.forEach(input => {
+        if (input.type === 'email') {
+            const emailRegex = /^\S+@\S+\.\S+$/;
+            isValid = isValid && emailRegex.test(input.value);
+        } else if (input.type === 'tel') {
+            const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+            isValid = isValid && phoneRegex.test(input.value);
+        } else if (input.classList.contains('currency')) {
+            const value = parseInt(input.value.replace(/[^0-9]/g, ''));
+            isValid = isValid && !isNaN(value) && value > 0;
+        } else {
+            isValid = isValid && input.value.trim() !== '';
+        }
 
-            input.classList.toggle('error-input', !isValid);
-        });
+        input.classList.toggle('error-input', !isValid);
+    });
 
-        return isValid;
-    }
+    return isValid;
+}
 
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
