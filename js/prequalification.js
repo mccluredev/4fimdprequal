@@ -222,33 +222,56 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form validation
- function validateSection(section) {
-    console.log("validateSection function is loaded"); // Debugging Log
+// Form validation
+function validateSection(section) {
+    console.log("Validating section:", section); // Log which section is being validated
+
+    if (!section) {
+        console.error("Error: Section is undefined or null.");
+        return false;
+    }
+
     const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+    console.log("Inputs found for validation:", inputs);
+
     let isValid = true;
 
     inputs.forEach(input => {
+        console.log(`Validating input: ${input.name || input.id}, Value: ${input.value}`);
+
         if (input.type === 'email') {
             const emailRegex = /^\S+@\S+\.\S+$/;
             isValid = isValid && emailRegex.test(input.value);
+            console.log("Email validation result:", emailRegex.test(input.value));
         } else if (input.type === 'tel') {
             const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
             isValid = isValid && phoneRegex.test(input.value);
+            console.log("Phone validation result:", phoneRegex.test(input.value));
         } else if (input.classList.contains('currency')) {
             const value = parseInt(input.value.replace(/[^0-9]/g, ''));
             isValid = isValid && !isNaN(value) && value > 0;
+            console.log("Currency validation result:", !isNaN(value) && value > 0);
         } else {
             isValid = isValid && input.value.trim() !== '';
+            console.log("General field validation result:", input.value.trim() !== '');
         }
 
-        input.classList.toggle('error-input', !isValid);
+        // Toggle error class and log it
+        const hasError = !isValid;
+        input.classList.toggle('error-input', hasError);
+        if (hasError) {
+            console.warn(`Validation failed for: ${input.name || input.id}`);
+        }
     });
+
+    console.log("Final validation result for section:", isValid ? "✅ Passed" : "❌ Failed");
 
     return isValid;
 }
 
-console.log("prequalification.js is loaded successfully");
-
+// Make function globally available
+window.validateSection = validateSection;
+console.log("validateSection function is now globally available.");
 
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
