@@ -14,29 +14,33 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.add('hidden');
     }
 
-    // Check for loan amount in URL and redirect if not present
+    // Format and set loan amount, check for loan amount in URL and redirect if not present
+   document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM fully loaded and parsed");
+
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
 
- if (!loanAmount || isNaN(parseInt(loanAmount))) {
-    window.location.href = 'index.html';
-    return;
-}
+    if (loanAmount && !isNaN(parseInt(loanAmount))) {
+        const loanInput = document.getElementById('00NHs00000lzslH');
+        if (loanInput) {
+            const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
 
-document.getElementById('00NHs00000lzslH').value = loanAmount;
-
-    // Format and set the loan amount
-    const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-
-    const loanAmountInput = document.getElementById('00NHs00000lzslH');
-    if (loanAmountInput) {
-        loanAmountInput.value = formattedAmount;
+            loanInput.value = formattedAmount;
+            console.log(`Loan amount populated: ${formattedAmount}`);
+        } else {
+            console.error("Loan amount input field not found!");
+        }
+    } else {
+        console.error("Invalid or missing loan amount in URL.");
     }
+});
+
 
 // Ensure the script runs only after the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
