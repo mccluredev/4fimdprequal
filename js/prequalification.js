@@ -39,19 +39,34 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
     }
 
   // Initialize Google Places Autocomplete safely
+// Initialize Google Places Autocomplete safely
 if (typeof google !== 'undefined' && google.maps && google.maps.places) {
     try {
         const autocomplete = new google.maps.places.Autocomplete(
             document.getElementById('autocomplete'),
             { types: ['address'], componentRestrictions: { country: 'US' } }
         );
+
+        if (autocomplete) {
+            console.log("Google Autocomplete initialized successfully.");
+
+            // Ensure `addListener` exists before calling it
+            if (typeof autocomplete.addListener === 'function') {
+                autocomplete.addListener('place_changed', () => {
+                    console.log("Place changed event triggered.");
+                });
+            } else {
+                console.warn("autocomplete.addListener is not a function. Skipping.");
+            }
+        } else {
+            console.warn("Autocomplete instance was not created.");
+        }
     } catch (error) {
         console.error("Google API encountered an error:", error);
     }
 } else {
     console.warn("Google API is not available. Skipping autocomplete initialization.");
 }
-
 
     // Handle address selection
     autocomplete.addListener('place_changed', function() {
