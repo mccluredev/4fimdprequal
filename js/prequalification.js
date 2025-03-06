@@ -19,9 +19,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const loanAmount = urlParams.get('amount');
 
     if (!loanAmount) {
-        window.location.href = 'index.html';
-        return;
-    }
+    window.location.href = 'index.html';
+    return;
+}
+
+document.getElementById('loan-amount-display').innerText = `$${parseInt(loanAmount).toLocaleString()}`;
 
     // Format and set the loan amount
     const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
@@ -95,6 +97,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    loanPurpose.addEventListener('change', function () {
+    const selectedPurpose = this.value;
+    if (selectedPurpose) {
+        const updatedURL = `complete.html?amount=${loanAmount}&purpose=${encodeURIComponent(selectedPurpose)}`;
+        window.location.href = updatedURL;
+    }
+});
 
     // Handle business established selection
     const businessEstablished = document.getElementById('00NHs00000lzslM');
