@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('loan-widget-form');
     const amountInput = document.getElementById('loan-amount');
     const errorMessage = document.getElementById('amount-error');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return value >= 1000 && value <= 1000000;
     }
 
-    amountInput.addEventListener('input', function(e) {
+    amountInput.addEventListener('input', function (e) {
         let value = formatCurrency(e.target.value);
         if (value) {
             value = parseInt(value).toLocaleString('en-US', {
@@ -25,13 +25,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!validateAmount(amountInput.value)) {
             errorMessage.style.display = 'block';
             return;
         }
-        errorMessage.style.display = 'none';
-        this.submit();
+        // Redirect to prequalification page with loan amount as URL parameter
+        const loanAmount = encodeURIComponent(formatCurrency(amountInput.value));
+        window.location.href = `prequalification.html?amount=${loanAmount}`;
     });
 });
