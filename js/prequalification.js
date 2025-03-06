@@ -304,13 +304,15 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
 
     // Add navigation button listeners
 
-   document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function () {
     console.log("Script Loaded - Attaching Next Button Listeners");
 
     document.querySelectorAll('.next-button').forEach(button => {
         console.log("Found Next Button - Attaching Click Event");
 
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent form submission
+
             console.log("Next button clicked!");
 
             const sections = document.querySelectorAll('.section');
@@ -324,6 +326,7 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
         });
     });
 });
+
 
 function goToNextSection(currentSection) {
     const nextSection = currentSection.nextElementSibling;
