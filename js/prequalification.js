@@ -303,13 +303,33 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
     }
 
     // Add navigation button listeners
-    document.querySelectorAll('.next-button').forEach(button => {
-        button.addEventListener('click', () => {
-            if (validateSection(currentSection)) {
-                slideSection(1);
-            }
-        });
+  document.querySelectorAll('.next-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const sections = document.querySelectorAll('.section');
+        let currentSection = [...sections].find(section => !section.classList.contains('hidden'));
+        if (validateSection(currentSection)) {
+            goToNextSection(currentSection);
+        }
     });
+});
+function goToNextSection(currentSection) {
+    const nextSection = currentSection.nextElementSibling;
+
+    if (nextSection) {
+        currentSection.classList.add('hidden'); 
+        nextSection.classList.remove('hidden'); 
+    }
+}
+function validateSection(section) {
+    const requiredFields = section.querySelectorAll('input[required], select[required]');
+    for (const field of requiredFields) {
+        if (!field.value || field.value === "Select") {
+            alert("Please fill out all required fields before proceeding.");
+            return false;
+        }
+    }
+    return true;
+}
 
     document.querySelectorAll('.back-button').forEach(button => {
         button.addEventListener('click', () => slideSection(-1));
