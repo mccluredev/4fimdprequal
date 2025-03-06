@@ -39,9 +39,15 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
     }
 
     // Initialize Google Places Autocomplete
-    const autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById('autocomplete'),
-        {types: ['address'], componentRestrictions: {country: 'US'}}
+    try {
+        if (google) {
+            const autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('autocomplete'),
+            {types: ['address'], componentRestrictions: {country: 'US'}}
+        }
+    } catch (error) {
+    console.error("Google API not loaded:", error);
+}            
     );
 
     // Handle address selection
