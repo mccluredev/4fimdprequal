@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("Script loaded and running!");
+
     // Initialize variables
     const sections = document.querySelectorAll('.section');
     const progressBar = document.querySelector('.progress-bar-fill');
@@ -14,33 +16,37 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.add('hidden');
     }
 
-    // Format and set loan amount, check for loan amount in URL and redirect if not present
-   document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOM fully loaded and parsed");
-
+    // Check for loan amount in URL and populate field
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
 
     if (loanAmount && !isNaN(parseInt(loanAmount))) {
-        const loanInput = document.getElementById('00NHs00000lzslH');
-        if (loanInput) {
-            const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
+        const loanInput = document.getElementById('00NHs00000lzslH'); // Ensure this ID matches your HTML input field
 
-            loanInput.value = formattedAmount;
-            console.log(`Loan amount populated: ${formattedAmount}`);
+        if (loanInput) {
+            loanInput.value = loanAmount;
+            console.log("Loan amount set to:", loanAmount);
         } else {
             console.error("Loan amount input field not found!");
         }
     } else {
         console.error("Invalid or missing loan amount in URL.");
     }
-});
 
+    // Format and set the loan amount for display
+    if (loanAmount) {
+        const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        const loanAmountInput = document.getElementById('00NHs00000lzslH'); // Ensure the ID is correct
+        if (loanAmountInput) {
+            loanAmountInput.value = formattedAmount;
+        }
+    }
 
 // Ensure the script runs only after the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
@@ -54,25 +60,34 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Check if Google API is available before initializing
+      // Google Maps Places API Initialization
     function initializeGooglePlaces() {
-    if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
-        console.error("Google Maps API is not available. Skipping autocomplete initialization.");
-        return;
+        if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+            console.error("Google Maps API is not available. Skipping autocomplete initialization.");
+            return;
+        }
+
+        const input = document.getElementById('autocomplete');
+        if (input) {
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['address'],
+                componentRestrictions: { country: 'US' }
+            });
+        } else {
+            console.error("Autocomplete input field not found.");
+        }
     }
 
-    const input = document.getElementById('autocomplete');
-    if (input) {
-        const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ['address'],
-            componentRestrictions: { country: 'US' }
-        });
-    } else {
-        console.error("Autocomplete input field not found.");
-    }
-}
+    // Initialize Google Places API once DOM is loaded
+    document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
 
-document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
+    // Ensure first section is visible on load
+    if (sections.length > 0) {
+        sections[0].classList.remove('hidden');
+    }
+
+    console.log("Prequalification.js fully loaded and executed.");
+});
 
     // Handle address selection
     autocomplete.addListener('place_changed', function() {
@@ -332,58 +347,50 @@ document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
         isAnimating = false;
     }
 
+
     // Add navigation button listeners
-
- document.addEventListener('DOMContentLoaded', function () {
-    console.log("Script Loaded - Attaching Next Button Listeners");
-
     document.querySelectorAll('.next-button').forEach(button => {
-    console.log("Next button found – Attaching event listener");
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log("Next button clicked!");
 
-    button.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log("Next button clicked!");
+            const currentSection = [...sections].find(section => !section.classList.contains('hidden'));
 
-        const sections = document.querySelectorAll('.section');
-        let currentSection = [...sections].find(section => !section.classList.contains('hidden'));
+            if (!currentSection) {
+                console.error("No visible section found!");
+                return;
+            }
 
-        if (!currentSection) {
-            console.error("No visible section found!");
-            return;
-        }
-
-        if (validateSection(currentSection)) {
-            console.log("Validation passed, moving to next section...");
-            goToNextSection(currentSection);
-        } else {
-            console.error("Validation failed. Check required fields.");
-        }
-    });
-});
-
-function goToNextSection(currentSection) {
-    const nextSection = currentSection.nextElementSibling;
-
-    if (nextSection) {
-        currentSection.classList.add('hidden'); 
-        nextSection.classList.remove('hidden'); 
-    }
-}
-function validateSection(section) {
-    const requiredFields = section.querySelectorAll('input[required], select[required]');
-    for (const field of requiredFields) {
-        if (!field.value || field.value === "Select") {
-            alert("Please fill out all required fields before proceeding.");
-            return false;
-        }
-    }
-    return true;
-}
-
-    document.querySelectorAll('.back-button').forEach(button => {
-        button.addEventListener('click', () => slideSection(-1));
+            if (validateSection(currentSection)) {
+                console.log("Validation passed, moving to next section...");
+                goToNextSection(currentSection);
+            } else {
+                console.error("Validation failed. Check required fields.");
+            }
+        });
     });
 
+    // Function to go to the next section
+    function goToNextSection(currentSection) {
+        const nextSection = currentSection.nextElementSibling;
+        if (nextSection) {
+            currentSection.classList.add('hidden');
+            nextSection.classList.remove('hidden');
+        }
+    }
+
+    // Function to validate required fields before moving forward
+    function validateSection(section) {
+        const requiredFields = section.querySelectorAll('input[required], select[required]');
+        for (const field of requiredFields) {
+            if (!field.value || field.value === "Select") {
+                alert("Please fill out all required fields before proceeding.");
+                return false;
+            }
+        }
+        return true;
+    }
+    
    // Form submission handler for Salesforce
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
