@@ -18,12 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
 
-    if (!loanAmount) {
+ if (!loanAmount || isNaN(parseInt(loanAmount))) {
     window.location.href = 'index.html';
     return;
 }
 
-document.getElementById('loan-amount-display').innerText = `$${parseInt(loanAmount).toLocaleString()}`;
+document.getElementById('loan-amount').value = loanAmount;
 
     // Format and set the loan amount
     const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
