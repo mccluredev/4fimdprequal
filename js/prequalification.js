@@ -38,17 +38,20 @@ document.getElementById('00NHs00000lzslH').value = loanAmount;
         loanAmountInput.value = formattedAmount;
     }
 
-    // Initialize Google Places Autocomplete
+  // Initialize Google Places Autocomplete safely
+if (typeof google !== 'undefined' && google.maps && google.maps.places) {
     try {
-        if (google) {
-            const autocomplete = new google.maps.places.Autocomplete(
+        const autocomplete = new google.maps.places.Autocomplete(
             document.getElementById('autocomplete'),
-            {types: ['address'], componentRestrictions: {country: 'US'}}
-        }
+            { types: ['address'], componentRestrictions: { country: 'US' } }
+        );
     } catch (error) {
-    console.error("Google API not loaded:", error);
-}            
-    );
+        console.error("Google API encountered an error:", error);
+    }
+} else {
+    console.warn("Google API is not available. Skipping autocomplete initialization.");
+}
+
 
     // Handle address selection
     autocomplete.addListener('place_changed', function() {
