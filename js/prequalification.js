@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize variables
     const sections = document.querySelectorAll('.section');
+    console.log("Sections found:", sections.length);  // Debugging line
+
+    if (sections.length === 0) {
+        console.error("❌ No sections found. Check if .section elements exist in the HTML.");
+    }
+});
     const progressBar = document.querySelector('.progress-bar-fill');
     const progressText = document.querySelector('.progress-text');
     const form = document.getElementById("prequalForm");
@@ -52,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    let input = document.getElementById("autocomplete");
+    let input = document.getElementById("#autocomplete");
 
     // Ensure input exists before initializing autocomplete
     if (!input) {
@@ -69,7 +75,7 @@ window.onload = function () {
     }
 };
 
-    const addressInput = document.querySelector("autocomplete"); // Ensure this ID is correct
+    const addressInput = document.querySelector("#autocomplete"); // Ensure this ID is correct
 
     if (addressInput) {
         const autocomplete = new google.maps.places.Autocomplete(addressInput);
