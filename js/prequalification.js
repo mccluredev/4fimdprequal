@@ -64,21 +64,21 @@ document.addEventListener("DOMContentLoaded", function () {
 if (typeof google !== 'undefined' && google.maps && google.maps.places) {
     console.log("Google Maps API is loaded correctly.");
 
-    const addressInput = document.querySelector("autocomplete"); // Ensure this ID matches an input field
+    const addressInput = document.querySelector("#autocomplete"); // Ensure this ID is correct
 
     if (addressInput) {
         const autocomplete = new google.maps.places.Autocomplete(addressInput);
         console.log("Autocomplete initialized:", autocomplete);
 
         // Ensure autocomplete is valid before adding a listener
-        if (autocomplete && typeof autocomplete.addListener === "function") {
-            autocomplete.addListener("place_changed", function () {
+        if (autocomplete && typeof google.maps.event.addListener === "function") {
+            google.maps.event.addListener(autocomplete, "place_changed", function () {
                 console.log("Autocomplete place changed event triggered.");
                 const place = autocomplete.getPlace();
                 console.log("Selected place:", place);
             });
         } else {
-            console.error("Error: Autocomplete is not valid.");
+            console.error("Error: Autocomplete is not valid or addListener is missing.");
         }
     } else {
         console.error("Error: Address input field not found.");
