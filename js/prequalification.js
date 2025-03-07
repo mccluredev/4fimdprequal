@@ -221,8 +221,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Form validation
-// Ensure validateSection is globally accessible
+// Form validation
+    // Ensure validateSection is globally accessible
 window.validateSection = function(section) {
     console.log("Validating section:", section); // Debugging
 
@@ -269,6 +269,7 @@ window.validateSection = function(section) {
 
 // Debugging Log
 console.log("✅ validateSection function is now globally available.");
+
 
 
     // Calculate interest rate based on FICO score and loan amount
