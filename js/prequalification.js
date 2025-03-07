@@ -60,10 +60,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-if (typeof google === "undefined" || !google.maps || !google.maps.places) {
-    console.error("❌ Error: Google Maps API is not loaded.");
-} else {
-    console.log("✅ Google Maps API is loaded correctly.");
+window.onload = function () {
+    if (typeof google !== "undefined" && google.maps && google.maps.places) {
+        console.log("✅ Google Maps API is loaded correctly.");
+        initializeGooglePlaces(); // Call this function ONLY when Maps is available
+    } else {
+        console.error("❌ Error: Google Maps API is not loaded.");
+    }
+};
 
     const addressInput = document.querySelector("autocomplete"); // Ensure this ID is correct
 
