@@ -5,7 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const sections = document.querySelectorAll('.section');
     const progressBar = document.querySelector('.progress-bar-fill');
     const progressText = document.querySelector('.progress-text');
-    const form = document.getElementById('prequalForm');
+    const form = document.getElementById("prequalForm");
+    if (!form) {
+        console.error("❌ Error: Form not found!");
+        return;
     const paymentCalculator = document.getElementById('payment-calculator');
     let currentSection = 0;
     let isAnimating = false;
@@ -142,7 +145,18 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Prequalification.js fully loaded and executed.");
 });
 
+let streetNumber = ""; // Declare at the top
 
+if (place.address_components) {
+    for (const component of place.address_components) {
+        const type = component.types[0];
+        switch (type) {
+            case "street_number":
+                streetNumber = component.long_name; // Now accessible globally in function
+                break;
+        }
+    }
+}
         // Set hidden field values
         document.getElementById('street').value = `${streetNumber} ${route}`.trim();
         document.getElementById('city').value = city;
