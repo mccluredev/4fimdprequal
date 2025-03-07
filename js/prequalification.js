@@ -507,4 +507,3 @@ console.log("✅ validateSection function is now globally available.");
         sections[0].classList.remove('hidden');
     }
     updateProgress();
-});
