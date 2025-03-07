@@ -1,30 +1,32 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Script loaded and running!");
 
-    // Initialize variables
     const sections = document.querySelectorAll('.section');
-    console.log("Sections found:", sections.length);  // Debugging line
+    console.log("Sections found:", sections.length);
 
     if (sections.length === 0) {
         console.error("❌ No sections found. Check if .section elements exist in the HTML.");
+        return;  // This is fine inside a function
     }
-});
+
     const progressBar = document.querySelector('.progress-bar-fill');
     const progressText = document.querySelector('.progress-text');
     const form = document.getElementById("prequalForm");
+
     if (!form) {
         console.error("❌ Error: Form not found!");
-        return;
+        return;  // This is now inside the function, so it's valid
     }
+
     const paymentCalculator = document.getElementById('payment-calculator');
     let currentSection = 0;
     let isAnimating = false;
 
-    // Hide loading screen immediately on page load
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
         loadingScreen.classList.add('hidden');
     }
+});
 
     // Check for loan amount in URL and populate field
     const urlParams = new URLSearchParams(window.location.search);
