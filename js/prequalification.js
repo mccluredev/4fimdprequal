@@ -61,11 +61,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Ensure Google Maps API is loaded
-    if (typeof google === "undefined" || !google.maps || !google.maps.places) {
+  if (typeof google === "undefined" || !google.maps || !google.maps.places) {
     console.error("❌ Error: Google Maps API is not loaded.");
 } else {
     console.log("✅ Google Maps API is loaded correctly.");
 }
+
 
 
         const addressInput = document.querySelector("#autocomplete"); // Ensure this ID is correct
