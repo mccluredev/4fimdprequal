@@ -135,6 +135,7 @@ if (addressInput) {
 } else {
     console.error("❌ Error: Address input field not found.");
 }
+}
 
 // Ensure first section is visible on load
 if (sections.length > 0) {
@@ -142,6 +143,7 @@ if (sections.length > 0) {
 }
 
 console.log("✅ Prequalification.js fully loaded and executed.");
+});
 
 // Ensure first section is visible on load
 if (sections.length > 0) {
