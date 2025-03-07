@@ -135,7 +135,6 @@ if (addressInput) {
 } else {
     console.error("❌ Error: Address input field not found.");
 }
-}
 
 // Ensure first section is visible on load
 if (sections.length > 0) {
