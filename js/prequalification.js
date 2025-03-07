@@ -113,6 +113,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
 
+                    if (place.address_components) {
+    for (const component of place.address_components) {
+        const type = component.types[0];
+        switch (type) {
+            case "street_number":
+                streetNumber = component.long_name; // Now accessible globally in function
+                break;
+        }
+    }
+}
                     // Set hidden field values
                     document.getElementById("street").value = `${streetNumber} ${route}`.trim();
                     document.getElementById("city").value = city;
@@ -146,22 +156,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 let streetNumber = ""; // Declare at the top
-
-if (place.address_components) {
-    for (const component of place.address_components) {
-        const type = component.types[0];
-        switch (type) {
-            case "street_number":
-                streetNumber = component.long_name; // Now accessible globally in function
-                break;
-        }
-    }
-}
-        // Set hidden field values
-        document.getElementById('street').value = `${streetNumber} ${route}`.trim();
-        document.getElementById('city').value = city;
-        document.getElementById('state').value = state;
-        document.getElementById('zip').value = zipCode;
 
     // Handle loan purpose selection
     const loanPurpose = document.getElementById('00NHs00000scaqg');
