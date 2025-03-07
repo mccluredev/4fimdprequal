@@ -60,32 +60,72 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-// Ensure Google Maps API is loaded
-if (typeof google !== 'undefined' && google.maps && google.maps.places) {
-    console.log("Google Maps API is loaded correctly.");
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script loaded and running!");
 
-    const addressInput = document.querySelector("#autocomplete"); // Ensure this ID is correct
+    // Ensure Google Maps API is loaded
+    if (typeof google !== "undefined" && google.maps && google.maps.places) {
+        console.log("✅ Google Maps API is loaded correctly.");
 
-    if (addressInput) {
-        const autocomplete = new google.maps.places.Autocomplete(addressInput);
-        console.log("Autocomplete initialized:", autocomplete);
+        const addressInput = document.querySelector("#autocomplete"); // Ensure this ID is correct
 
-        // Ensure autocomplete is valid before adding a listener
-        if (autocomplete && typeof google.maps.event.addListener === "function") {
-            google.maps.event.addListener(autocomplete, "place_changed", function () {
-                console.log("Autocomplete place changed event triggered.");
-                const place = autocomplete.getPlace();
-                console.log("Selected place:", place);
-            });
+        if (addressInput) {
+            const autocomplete = new google.maps.places.Autocomplete(addressInput);
+            console.log("✅ Autocomplete initialized:", autocomplete);
+
+            // Ensure `autocomplete` is valid before adding a listener
+            if (autocomplete && typeof google.maps.event.addListener === "function") {
+                google.maps.event.addListener(autocomplete, "place_changed", function () {
+                    console.log("📌 Autocomplete place changed event triggered.");
+                    const place = autocomplete.getPlace();
+                    console.log("🏠 Selected place:", place);
+
+                    // Extract address components
+                    let streetNumber = "";
+                    let route = "";
+                    let city = "";
+                    let state = "";
+                    let zipCode = "";
+
+                    if (place.address_components) {
+                        for (const component of place.address_components) {
+                            const type = component.types[0];
+                            switch (type) {
+                                case "street_number":
+                                    streetNumber = component.long_name;
+                                    break;
+                                case "route":
+                                    route = component.long_name;
+                                    break;
+                                case "locality":
+                                    city = component.long_name;
+                                    break;
+                                case "administrative_area_level_1":
+                                    state = component.short_name;
+                                    break;
+                                case "postal_code":
+                                    zipCode = component.long_name;
+                                    break;
+                            }
+                        }
+                    }
+
+                    // Set hidden field values
+                    document.getElementById("street").value = `${streetNumber} ${route}`.trim();
+                    document.getElementById("city").value = city;
+                    document.getElementById("state").value = state;
+                    document.getElementById("zip").value = zipCode;
+                });
+            } else {
+                console.error("❌ Error: Autocomplete is not valid or `google.maps.event.addListener` is missing.");
+            }
         } else {
-            console.error("Error: Autocomplete is not valid or addListener is missing.");
+            console.error("❌ Error: Address input field not found.");
         }
     } else {
-        console.error("Error: Address input field not found.");
+        console.error("❌ Error: Google Maps API is not loaded.");
     }
-} else {
-    console.error("Error: Google Maps API is not loaded.");
-}
+});
 
     // Initialize Google Places API once DOM is loaded
     document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
@@ -98,36 +138,6 @@ if (typeof google !== 'undefined' && google.maps && google.maps.places) {
     console.log("Prequalification.js fully loaded and executed.");
 });
 
-    // Handle address selection
-    autocomplete.addListener('place_changed', function() {
-        const place = autocomplete.getPlace();
-        let streetNumber = '';
-        let route = '';
-        let city = '';
-        let state = '';
-        let zipCode = '';
-
-        // Parse address components
-        for (const component of place.address_components) {
-            const type = component.types[0];
-            switch (type) {
-                case 'street_number':
-                    streetNumber = component.long_name;
-                    break;
-                case 'route':
-                    route = component.long_name;
-                    break;
-                case 'locality':
-                    city = component.long_name;
-                    break;
-                case 'administrative_area_level_1':
-                    state = component.short_name;
-                    break;
-                case 'postal_code':
-                    zipCode = component.long_name;
-                    break;
-            }
-        }
 
         // Set hidden field values
         document.getElementById('street').value = `${streetNumber} ${route}`.trim();
