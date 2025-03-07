@@ -63,10 +63,16 @@ document.addEventListener('DOMContentLoaded', function () {
     let input = document.getElementById("#autocomplete");
 
     // Ensure input exists before initializing autocomplete
+document.addEventListener("DOMContentLoaded", function () {
+    let input = document.getElementById("#autocomplete");
+
     if (!input) {
         console.error("Autocomplete input field not found!");
-        return;
+        return;  // ✅ Now this return is inside a function and valid
     }
+
+    console.log("Autocomplete input field found:", input);
+});
 
 window.onload = function () {
     if (typeof google !== "undefined" && google.maps && google.maps.places) {
