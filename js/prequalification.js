@@ -146,9 +146,6 @@ document.addEventListener('DOMContentLoaded', function () {
         sections[0].classList.remove('hidden');
     }
 
-    console.log("Prequalification.js fully loaded and executed.");
-});
-
 let streetNumber = ""; // Declare at the top
 
     // Handle loan purpose selection
