@@ -222,7 +222,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form validation
-window.validateSection = function(section) {
+window.validateSection = (section) => {
+    console.log("Validating section", section);
+};
+    
+function(section) {
     console.log("Validating section:", section); // Debugging
     if (!section) {
         console.error("Error: Section is undefined or null.");
