@@ -60,23 +60,28 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-      // Google Maps Places API Initialization
-    function initializeGooglePlaces() {
-        if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
-            console.error("Google Maps API is not available. Skipping autocomplete initialization.");
-            return;
-        }
-
-        const input = document.getElementById('autocomplete');
-        if (input) {
-            const autocomplete = new google.maps.places.Autocomplete(input, {
-                types: ['address'],
-                componentRestrictions: { country: 'US' }
+// Check if Google Maps API is loaded
+if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+    const autocompleteInput = document.querySelector("#your-address-input"); // Change to actual input field
+    
+    if (autocompleteInput) {
+        const autocomplete = new google.maps.places.Autocomplete(autocompleteInput);
+        
+        // Ensure autocomplete is initialized before adding the listener
+        if (autocomplete) {
+            autocomplete.addListener("place_changed", function () {
+                console.log("Autocomplete place changed event triggered.");
             });
         } else {
-            console.error("Autocomplete input field not found.");
+            console.error("Google Autocomplete failed to initialize.");
         }
+    } else {
+        console.error("Address input field not found.");
     }
+} else {
+    console.error("Google Maps API not loaded.");
+}
+
 
     // Initialize Google Places API once DOM is loaded
     document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
