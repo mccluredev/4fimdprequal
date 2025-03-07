@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Script loaded and running!");
+    console.log("✅ Script loaded and running!");
 
     // Ensure Google Maps API is loaded
     if (typeof google !== "undefined" && google.maps && google.maps.places) {
@@ -73,20 +73,20 @@ document.addEventListener("DOMContentLoaded", function () {
             const autocomplete = new google.maps.places.Autocomplete(addressInput);
             console.log("✅ Autocomplete initialized:", autocomplete);
 
-            // Ensure `autocomplete` is valid before adding a listener
+            // Ensure autocomplete is valid before adding a listener
             if (autocomplete && typeof google.maps.event.addListener === "function") {
                 google.maps.event.addListener(autocomplete, "place_changed", function () {
-                    console.log("📌 Autocomplete place changed event triggered.");
+                    console.log("📍 Autocomplete place changed event triggered.");
                     const place = autocomplete.getPlace();
-                    console.log("🏠 Selected place:", place);
+                    console.log("📍 Selected place:", place);
+
+                    let streetNumber = "",
+                        route = "",
+                        city = "",
+                        state = "",
+                        zipCode = "";
 
                     // Extract address components
-                    let streetNumber = "";
-                    let route = "";
-                    let city = "";
-                    let state = "";
-                    let zipCode = "";
-
                     if (place.address_components) {
                         for (const component of place.address_components) {
                             const type = component.types[0];
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("zip").value = zipCode;
                 });
             } else {
-                console.error("❌ Error: Autocomplete is not valid or `google.maps.event.addListener` is missing.");
+                console.error("❌ Error: Autocomplete is not valid or addListener is missing.");
             }
         } else {
             console.error("❌ Error: Address input field not found.");
@@ -125,10 +125,14 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         console.error("❌ Error: Google Maps API is not loaded.");
     }
-});
 
-    // Initialize Google Places API once DOM is loaded
-    document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
+    // Ensure first section is visible on load
+    if (sections.length > 0) {
+        sections[0].classList.remove("hidden");
+    }
+
+    console.log("✅ Prequalification.js fully loaded and executed.");
+});
 
     // Ensure first section is visible on load
     if (sections.length > 0) {
