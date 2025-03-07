@@ -52,10 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-// Ensure the script runs only after the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("Script loaded and running!");
-
     let input = document.getElementById("autocomplete");
 
     // Ensure input exists before initializing autocomplete
@@ -63,9 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Autocomplete input field not found!");
         return;
     }
-
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ Script loaded and running!");
 
     // Ensure Google Maps API is loaded
     if (typeof google !== "undefined" && google.maps && google.maps.places) {
