@@ -64,11 +64,10 @@ document.addEventListener("DOMContentLoaded", function () {
 if (typeof google !== 'undefined' && google.maps && google.maps.places) {
     console.log("Google Maps API is loaded correctly.");
 
-    const addressInput = document.querySelector("#your-address-input"); // Make sure this ID is correct!
+    const addressInput = document.querySelector("autocomplete"); // Ensure this ID matches an input field
 
     if (addressInput) {
         const autocomplete = new google.maps.places.Autocomplete(addressInput);
-
         console.log("Autocomplete initialized:", autocomplete);
 
         // Ensure autocomplete is valid before adding a listener
@@ -87,7 +86,6 @@ if (typeof google !== 'undefined' && google.maps && google.maps.places) {
 } else {
     console.error("Error: Google Maps API is not loaded.");
 }
-
 
     // Initialize Google Places API once DOM is loaded
     document.addEventListener("DOMContentLoaded", initializeGooglePlaces);
