@@ -222,12 +222,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form validation
-window.validateSection = (section) => {
-    console.log("Validating section", section);
-};
-    
-function(section) {
+// Ensure validateSection is globally accessible
+window.validateSection = function(section) {
     console.log("Validating section:", section); // Debugging
+
     if (!section) {
         console.error("Error: Section is undefined or null.");
         return false;
@@ -265,12 +263,13 @@ function(section) {
         }
     });
 
-    console.log("✅ Final validation result for section:", isValid ? "✅ Passed" : "❌ Failed");
+    console.log("✅ Final validation result for section:", isValid ? "✔️ Passed" : "❌ Failed");
     return isValid;
 };
 
 // Debugging Log
 console.log("✅ validateSection function is now globally available.");
+
 
     // Calculate interest rate based on FICO score and loan amount
     function calculateInterestRate(creditScore, loanAmount) {
