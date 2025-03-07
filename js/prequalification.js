@@ -162,7 +162,6 @@ if (place.address_components) {
         document.getElementById('city').value = city;
         document.getElementById('state').value = state;
         document.getElementById('zip').value = zipCode;
-    });
 
     // Handle loan purpose selection
     const loanPurpose = document.getElementById('00NHs00000scaqg');
