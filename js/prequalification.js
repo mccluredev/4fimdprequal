@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!form) {
         console.error("❌ Error: Form not found!");
         return;
+    }
     const paymentCalculator = document.getElementById('payment-calculator');
     let currentSection = 0;
     let isAnimating = false;
