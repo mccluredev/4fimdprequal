@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("Script loaded and running!");
 
     // Global variable declarations
-    let currentSectionIndex = 0; // Renamed for clarity
+    let currentSectionIndex = 0;
     let isAnimating = false;
     let streetNumber = "";
     
@@ -33,10 +33,49 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingScreen.classList.add('hidden');
     }
     
-    // Ensure first section is visible on load
-    if (sections.length > 0) {
-        sections[0].classList.remove('hidden');
+    // SIMPLIFIED NAVIGATION FUNCTIONS
+    // Show a specific section and update progress
+    function showSection(index) {
+        if (index < 0 || index >= sections.length) {
+            console.error("Invalid section index:", index);
+            return;
+        }
+        
+        // Hide all sections
+        sections.forEach(section => section.classList.add('hidden'));
+        
+        // Show the target section
+        sections[index].classList.remove('hidden');
+        
+        // Update our tracking variable
+        currentSectionIndex = index;
+        
+        // Update progress
+        updateProgressBar(index);
+        
+        console.log(`Navigated to section ${index + 1} of ${sections.length}`);
     }
+    
+    // Simplified progress bar update
+    function updateProgressBar(index) {
+        const totalSections = sections.length;
+        const progress = ((index + 1) / totalSections) * 100;
+        
+        console.log(`Updating progress bar: ${progress}% (Section ${index + 1} of ${totalSections})`);
+        
+        // Set progress bar width directly with inline style
+        if (progressBar) {
+            progressBar.style.width = progress + '%';
+        }
+        
+        // Update progress text
+        if (progressText) {
+            progressText.textContent = `Step ${index + 1} of ${totalSections}`;
+        }
+    }
+    
+    // Initialize with first section
+    showSection(0);
     
     // Check for loan amount in URL and populate field
     const urlParams = new URLSearchParams(window.location.search);
@@ -61,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("No valid loan amount found in URL.");
     }
     
-    // Initialize autocomplete (fix selector - remove # since we're using querySelector)
+    // Initialize autocomplete
     const addressInput = document.querySelector("#autocomplete");
     console.log("Address input found:", addressInput ? "Yes" : "No");
     
@@ -264,10 +303,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("General field validation result:", input.value.trim() !== '');
             }
             
-            const hasError = !isValid;
-            input.classList.toggle('error-input', hasError);
-            if (hasError) {
-                console.warn(`Validation failed for: ${input.name || input.id}`);
+            if (!isValid) {
+                input.classList.add('error-input');
+            } else {
+                input.classList.remove('error-input');
             }
         });
         
@@ -347,165 +386,34 @@ document.addEventListener('DOMContentLoaded', function() {
         termSlider.addEventListener('input', updatePaymentCalculator);
     }
     
-    // Function to determine the current visible section
-    function getCurrentVisibleSection() {
-        return [...sections].findIndex(section => !section.classList.contains('hidden'));
-    }
-    
-    // Navigation with animations
-    function goToSection(targetSectionIndex) {
-        if (isAnimating) return;
-        
-        const currentSectionIndex = getCurrentVisibleSection();
-        if (currentSectionIndex === -1 || targetSectionIndex < 0 || targetSectionIndex >= sections.length) {
-            console.error("Invalid section navigation:", currentSectionIndex, "to", targetSectionIndex);
-            return;
-        }
-        
-        isAnimating = true;
-        
-        const currentSection = sections[currentSectionIndex];
-        const targetSection = sections[targetSectionIndex];
-        const direction = targetSectionIndex > currentSectionIndex ? 1 : -1;
-        
-        // Prepare the animation
-        targetSection.classList.remove('hidden');
-        targetSection.classList.add(direction > 0 ? 'slide-enter' : 'slide-back-enter');
-        
-        // Force reflow to ensure CSS transitions work
-        void targetSection.offsetWidth;
-        
-        // Start the animation
-        currentSection.classList.add(direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active');
-        targetSection.classList.add(direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active');
-        
-        // Update the global current section
-        currentSection = targetSectionIndex;
-        
-        // Wait for animation to complete
-        setTimeout(() => {
-            // Hide the previous section
-            currentSection.classList.add('hidden');
-            
-            // Remove animation classes
-            currentSection.classList.remove(
-                direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active'
-            );
-            targetSection.classList.remove(
-                direction > 0 ? 'slide-enter' : 'slide-back-enter',
-                direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active'
-            );
-            
-            // Update progress
-            updateProgress(targetSectionIndex);
-            
-            // Release animation lock
-            isAnimating = false;
-        }, 500);
-    }
-    
-    // Add navigation button listeners - NEXT buttons
+    // Set up navigation buttons - NEXT buttons
     document.querySelectorAll('.next-button').forEach(button => {
-        button.addEventListener('click', (e) => {
+        button.addEventListener('click', function(e) {
             e.preventDefault();
             console.log("Next button clicked!");
-            
-            const currentSectionIndex = getCurrentVisibleSection();
-            if (currentSectionIndex === -1) {
-                console.error("No visible section found!");
-                return;
-            }
             
             const currentSection = sections[currentSectionIndex];
             
             if (validateSection(currentSection)) {
                 console.log("Validation passed, moving to next section...");
-                
-                // Hide current section
-                currentSection.classList.add('hidden');
-                
-                // Show next section
-                const nextSectionIndex = currentSectionIndex + 1;
-                if (nextSectionIndex < sections.length) {
-                    sections[nextSectionIndex].classList.remove('hidden');
-                    
-                    // Update current section tracker for global state
-                    currentSection = nextSectionIndex;
-                    
-                    // Update the progress bar
-                    updateProgress(nextSectionIndex);
-                }
+                showSection(currentSectionIndex + 1);
             } else {
                 console.error("Validation failed. Check required fields.");
             }
         });
     });
     
-    // Add navigation button listeners - BACK buttons (FIXED)
+    // Set up navigation buttons - BACK buttons
     document.querySelectorAll('.back-button').forEach(button => {
-        button.addEventListener('click', (e) => {
+        button.addEventListener('click', function(e) {
             e.preventDefault();
             console.log("Back button clicked!");
             
-            const currentSectionIndex = getCurrentVisibleSection();
-            if (currentSectionIndex === -1) {
-                console.error("No visible section found!");
-                return;
-            }
-            
-            // Only proceed if not on the first section
             if (currentSectionIndex > 0) {
-                const currentSection = sections[currentSectionIndex];
-                const prevSectionIndex = currentSectionIndex - 1;
-                const prevSection = sections[prevSectionIndex];
-                
-                // Hide current section
-                currentSection.classList.add('hidden');
-                
-                // Show previous section
-                prevSection.classList.remove('hidden');
-                
-                // Update global variable for tracking
-                currentSection = prevSectionIndex;
-                
-                // Explicitly update the progress bar
-                updateProgress(prevSectionIndex);
-                
-                console.log("Moved to previous section:", prevSectionIndex);
+                showSection(currentSectionIndex - 1);
             }
         });
     });
-    
-    // Progress bar update
-    function updateProgress(sectionIndex) {
-        // Use passed index or current global index
-        const index = typeof sectionIndex !== 'undefined' ? sectionIndex : getCurrentVisibleSection();
-        const totalSections = sections.length;
-        
-        // Calculate progress as percentage
-        const progress = ((index + 1) / totalSections) * 100;
-        
-        console.log("Updating progress for section:", index + 1, "of", totalSections);
-        console.log("Progress percentage:", progress + "%");
-        
-        // Update the progress bar width - DIRECT DOM MANIPULATION
-        // Make sure we're updating the correct element with inline style
-        if (progressBar) {
-            // Apply the width directly with !important to override any CSS
-            progressBar.setAttribute('style', `width: ${progress}% !important`);
-            console.log(`Setting progress bar width to ${progress}%`);
-        } else {
-            console.error("Progress bar element not found!");
-        }
-        
-        // Update the progress text
-        if (progressText) {
-            progressText.textContent = `Step ${index + 1} of ${totalSections}`;
-            console.log(`Updating progress text to: Step ${index + 1} of ${totalSections}`);
-        } else {
-            console.error("Progress text element not found!");
-        }
-    }
     
     // Form submission handler for Salesforce
     if (form) {
@@ -516,14 +424,8 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             console.log("Form submission started");
             
-            const visibleSectionIndex = getCurrentVisibleSection();
-            if (visibleSectionIndex === -1) {
-                console.error("No visible section found!");
-                return;
-            }
-            
-            const visibleSection = sections[visibleSectionIndex];
-            if (!validateSection(visibleSection)) {
+            const currentSection = sections[currentSectionIndex];
+            if (!validateSection(currentSection)) {
                 console.error("Validation failed, stopping submission");
                 return;
             }
@@ -580,9 +482,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Instead of using fetch, submit the form directly
-            console.log("Submitting form traditionally to:", form.action);
-            
             // Set a flag in localStorage to indicate form was submitted
             localStorage.setItem('formSubmitted', 'true');
             
@@ -592,9 +491,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error("Form element not found - form submission handler not initialized");
     }
-    
-    // Initialize progress with the initial section (0)
-    updateProgress(0);
     
     console.log("✅ Prequalification.js fully loaded and executed.");
 });
