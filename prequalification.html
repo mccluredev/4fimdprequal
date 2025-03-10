@@ -3,239 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
-    <title>Loan Pre-qualification</title>
+    <title>Application Complete</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYoh0dFh9SX2eIOe7lXesPbUb6lnPhqgU&libraries=places" async defer></script>
+    <style>
+        /* Specific styles for completion page */
+        .completion-page .container {
+            max-width: 800px;
+            padding: 20px;
+            margin: 20px auto;
+        }
+
+        /* Make the header more compact */
+        .completion-page h1 {
+            margin-bottom: 10px;
+            color: #2c5282;
+        }
+
+        .completion-page h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .completion-page h3 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #2c5282;
+        }
+
+        .completion-page p {
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
+        /* Individual cards with spacing */
+        .offer-card, .next-steps-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 20px; /* Add spacing between cards */
+        }
+
+        /* Highlight the payment amount */
+        .payment-display {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .payment-display label {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .payment-display .amount {
+            font-size: 46px; /* Larger font size */
+            font-weight: bold;
+            color: #2c5282;
+            margin: 10px 0;
+        }
+
+        /* Disclaimer text */
+        .disclaimer {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Optimize the slider */
+        .term-slider-container {
+            margin: 20px 0;
+        }
+
+        .term-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            margin: 15px 0;
+        }
+
+        /* Remove focus outline for all browsers */
+        .term-slider:focus,
+        .term-slider:active,
+        .term-slider:hover {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        /* Chrome, Safari, Edge, Opera */
+        .term-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2c5282;
+            cursor: pointer;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+        }
+
+        .term-slider::-webkit-slider-thumb:focus,
+        .term-slider::-webkit-slider-thumb:active,
+        .term-slider::-webkit-slider-thumb:hover {
+            outline: none !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+        }
+
+        /* Firefox */
+        .term-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2c5282;
+            cursor: pointer;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+        }
+
+        .term-slider::-moz-range-thumb:focus,
+        .term-slider::-moz-range-thumb:active,
+        .term-slider::-moz-range-thumb:hover {
+            outline: none !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+        }
+
+        .term-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        #current-term {
+            font-weight: bold;
+        }
+
+        /* Loading spinner */
+        .loading {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #2c5282;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Button styles */
+        .btn {
+            display: inline-block;
+            background-color: #2c5282;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background-color: #1a365d;
+        }
+    </style>
 </head>
-<body>
- <div class="container">
-    <div class="progress-container">
-        <div class="progress-bar">
-            <div class="progress-bar-fill"></div>
+<body class="completion-page">
+    <div class="container">
+        <h1>Loan Application</h1>
+        
+        <!-- Loading element -->
+        <div id="loading-element" class="loading">
+            <p>Processing your application...</p>
+            <div class="spinner"></div>
         </div>
-        <div class="progress-text">Step 1 of 4</div>
-    </div>
-
-    <form id="prequalForm" action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8" method="POST">
-        <input type="hidden" name="oid" value="00DHs000003XeKL">
-        <!-- Updated retURL to point to your complete.html page with the submitted flag -->
-        <input type="hidden" name="retURL" value="https://mccluredev.github.io/4fimdprequal/complete.html?submitted=true">
-        <input type="hidden" name="lead_source" value="Web to Lead">
-
-
-            <!-- Section 1: Loan Info -->
-            <div class="section" id="section-1">
-                <h2>Loan Information</h2>
-                <div class="loan-summary">
-                    <label>Requested Loan Amount:</label>
-                    <input type="text" 
-                           id="00NHs00000lzslH" 
-                           name="00NHs00000lzslH" 
-                           class="currency" 
-                           readonly>
-                </div>
-
-                <label for="00NHs00000scaqg">What is the purpose of your loan? *</label>
-                <select id="00NHs00000scaqg" name="00NHs00000scaqg" required>
-                    <option value="">Select</option>
-                    <option value="Working Capital">Working Capital</option>
-                    <option value="Equipment Purchase">Equipment Purchase</option>
-                    <option value="Other">Other</option>
-                </select>
-
-                <div id="other-purpose" class="hidden">
-                    <label for="00NQP000003JB1F">Please specify *</label>
-                    <textarea id="00NQP000003JB1F" 
-                              name="00NQP000003JB1F" 
-                              wrap="soft" 
-                              rows="3"></textarea>
-                </div>
-
-                <button type="button" class="next-button">Next</button>
-            </div>
-
-            <!-- Section 2: Credit Info -->
-            <div class="section hidden" id="section-2">
-                <h2>Credit Information</h2>
-                <label for="00NHs00000m08cg">Estimated Credit Score *</label>
-                <select id="00NHs00000m08cg" name="00NHs00000m08cg" required>
-                    <option value="">Select</option>
-                    <option value="760">760 or higher</option>
-                    <option value="720">720 - 759</option>
-                    <option value="680">680 - 719</option>
-                    <option value="640">640 - 679</option>
-                    <option value="639">Below 640</option>
-                </select>
-
-                <label for="00NHs00000m08cl">Estimated Monthly Income *</label>
-                <input type="text" 
-                       id="00NHs00000m08cl" 
-                       name="00NHs00000m08cl" 
-                       class="currency" 
-                       required>
-
-                <label for="00NHs00000m08cq">Estimated Monthly Debt *</label>
-                <input type="text" 
-                       id="00NHs00000m08cq" 
-                       name="00NHs00000m08cq" 
-                       class="currency" 
-                       required>
-
-                <div class="button-container">
-                    <button type="button" class="back-button">Back</button>
-                    <button type="button" class="next-button">Next</button>
-                </div>
-            </div>
-
-            <!-- Section 3: Business Info -->
-            <div class="section hidden" id="section-3">
-                <h2>Business Information</h2>
-                <label for="00NHs00000lzslM">Business Established *</label>
-                <select id="00NHs00000lzslM" name="00NHs00000lzslM" required>
-                    <option value="">Select</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
-
-                <div id="years-container" class="hidden">
-                    <label for="00NHs00000m08cv">Years in Business *</label>
-                    <input type="number" 
-                           id="00NHs00000m08cv" 
-                           name="00NHs00000m08cv" 
-                           min="0" 
-                           max="100">
-                </div>
-
-                <label for="00NHs00000lzslR">Area of Expertise *</label>
-                <select id="00NHs00000lzslR" name="00NHs00000lzslR" required>
-                    <option value="">Select</option>
-                    <option value="Acupuncturist">Acupuncturist</option>
-                    <option value="Advanced Practising RN">Advanced Practising RN</option>
-                    <option value="Advanced Registered NP">Advanced Registered NP</option>
-                    <option value="Certified Registered Nurse Anaesthetist">Certified Registered Nurse Anaesthetist</option>
-                    <option value="Chiropractor">Chiropractor</option>
-                    <option value="Dental Hygienist">Dental Hygienist</option>
-                    <option value="Dentist">Dentist</option>
-                    <option value="Doctor of Physical Therapy">Doctor of Physical Therapy</option>
-                    <option value="Licensed Practical Nurse">Licensed Practical Nurse</option>
-                    <option value="Naturopathic">Naturopathic</option>
-                    <option value="Occupational Therapist">Occupational Therapist</option>
-                    <option value="Optometrist">Optometrist</option>
-                    <option value="Osteopath">Osteopath</option>
-                    <option value="Pharmacist">Pharmacist</option>
-                    <option value="Physical Therapist">Physical Therapist</option>
-                    <option value="Physician/Surgeon">Physician/Surgeon</option>
-                    <option value="Physician Assistant">Physician Assistant</option>
-                    <option value="Podiatrist">Podiatrist</option>
-                    <option value="Psychologist">Psychologist</option>
-                    <option value="Registered Nurse">Registered Nurse</option>
-                    <option value="Speech-Language Pathologist">Speech-Language Pathologist</option>
-                    <option value="Veterinarian">Veterinarian</option>
-                </select>
-
-                <div class="button-container">
-                    <button type="button" class="back-button">Back</button>
-                    <button type="button" class="next-button">Next</button>
-                </div>
-            </div>
-
-            <!-- Section 4: Personal Info -->
-            <div class="section hidden" id="section-4">
-                <h2>Personal Information</h2>
-                <label for="first_name">First Name *</label>
-                <input type="text" 
-                       id="first_name" 
-                       name="first_name" 
-                       required 
-                       pattern="[A-Za-z ]+" 
-                       title="Please enter letters only">
-
-                <label for="last_name">Last Name *</label>
-                <input type="text" 
-                       id="last_name" 
-                       name="last_name" 
-                       required 
-                       pattern="[A-Za-z ]+" 
-                       title="Please enter letters only">
-
-                <label for="email">Email Address *</label>
-                <input type="email" 
-                       id="email" 
-                       name="email" 
-                       required>
-
-                <label for="mobile">Mobile Phone *</label>
-                <input type="tel" 
-                       id="mobile" 
-                       name="mobile" 
-                       required 
-                       placeholder="(XXX) XXX-XXXX">
-
-                <label for="autocomplete">Address *</label>
-                <input type="text" 
-                       id="autocomplete" 
-                       placeholder="Start typing your address">
-
-                <!-- Hidden address fields -->
-                <input type="hidden" id="street" name="street">
-                <input type="hidden" id="city" name="city">
-                <input type="hidden" id="state" name="state">
-                <input type="hidden" id="zip" name="zip">
-
-                <!-- Preserve loan info in hidden fields for the completion page -->
-                <input type="hidden" id="loan_amount_param" name="loan_amount_param">
-                <input type="hidden" id="loan_purpose_param" name="loan_purpose_param">
-
-                <div class="button-container">
-                    <button type="button" class="back-button">Back</button>
-                    <button type="submit" class="submit-button">Submit Application and View My Estimate</button>
-                </div>
-            </div>
-        </form>
-
-        <!-- Payment Calculator -->
-        <div class="section hidden" id="payment-calculator">
-            <h2>Your Estimated Payment</h2>
-            <div class="calculator-container">
-                <div class="rate-info">
-                    <h3>Your Rate Information</h3>
-                    <p id="rate-text"></p>
-                </div>
-
-                <div class="payment-display">
-                    <label>Estimated Monthly Payment:</label>
-                    <div id="monthly-payment" class="amount"></div>
-                </div>
-
-                <div class="term-slider-container">
-                    <label for="term-slider">Adjust Loan Term</label>
-                    <input type="range" 
-                           id="term-slider" 
-                           class="term-slider" 
-                           min="6" 
-                           max="144" 
-                           step="6" 
-                           value="60">
-                    <div class="term-labels">
-                        <span>6 months</span>
-                        <span id="current-term">60 months</span>
-                        <span>144 months</span>
-                    </div>
-                </div>
-
-                <a href="https://4fimd.com" class="return-home">Return to Home</a>
-            </div>
+        
+        <!-- Results container -->
+        <div id="results-container">
+            <!-- Content will be populated by JavaScript -->
         </div>
     </div>
 
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="hidden">
-        <h2>Calculating your estimate...</h2>
-        <div class="spinner"></div>
-    </div>
-
-    <script src="js/prequalification.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Complete page loaded");
+            
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const loanAmount = urlParams.get('amount') || localStorage.getItem('loan_amount');
+            const purpose = urlParams.get('purpose') || localStorage.getItem('loan_purpose');
+            const submitted = urlParams.get('submitted');
+            
+            console.log("Amount:", loanAmount);
+            console.log("Purpose:", purpose);
+            console.log("Submitted:", submitted);
+            
+            // Get stored form data (if any)
+            let formData;
+            try {
+                const storedData = localStorage.getItem('prequalFormData');
+                if (storedData) {
+                    formData = JSON.parse(storedData);
+                    console.log("Retrieved form data from localStorage:", formData);
+                }
+            } catch (e) {
+                console.error("Error retrieving form data:", e);
+            }
+            
+            // Check if form was submitted
+            const wasSubmitted = localStorage.getItem('formSubmitted') === 'true' || submitted === 'true';
+            
+            // Display results based on available data
+            const resultContainer = document.getElementById('results-container');
+            const loadingElement = document.getElementById('loading-element');
+            
+            if (loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+            
+            if (resultContainer) {
+                if (wasSubmitted) {
+                    // Show success message and results for prequalification
+                    resultContainer.innerHTML = `
+                        <h2>Prequalification Request Submitted!</h2>
+                        <p>Thank you for your interest in our loan products. Your prequalification request has been received.</p>
+                    `;
+                    
+                    // If we have credit score info, calculate and show interest rate
+                    if (formData && formData['00NHs00000m08cg']) {
+                        const creditScore = formData['00NHs00000m08cg'];
+                        const estimatedRate = calculateInterestRate(creditScore, loanAmount);
+                        
+                        if (estimatedRate !== null) {
+                            const termMonths = 60; // Default 5-year term
+                            const amountValue = parseInt(loanAmount ? loanAmount.replace(/[^0-9]/g, '') : 0);
+                            const payment = calculateMonthlyPayment(amountValue, estimatedRate, termMonths);
+                            
+                            resultContainer.innerHTML += `
+                                <!-- Estimated Offer Card -->
+                                <div class="offer-card">
+                                    <h3>Your Estimated Offer</h3>
+                                    <p><strong>Requested Loan Amount:</strong> ${loanAmount ? loanAmount : 'Not specified'}</p>
+                                    <p><strong>Loan Purpose:</strong> ${purpose || 'Not specified'}</p>
+                                    <p><strong>Interest Rate:</strong> ${estimatedRate}% APR</p>
+                                    
+                                    <div class="payment-display">
+                                        <label>Estimated Monthly Payment:</label>
+                                        <div id="monthly-payment" class="amount">
+                                            ${formatCurrency(payment)}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="term-slider-container">
+                                        <label for="term-slider">Adjust Loan Term</label>
+                                        <input type="range" 
+                                               id="term-slider" 
+                                               class="term-slider" 
+                                               min="6" 
+                                               max="144" 
+                                               step="6" 
+                                               value="60">
+                                        <div class="term-labels">
+                                            <span>6 months</span>
+                                            <span id="current-term">60 months</span>
+                                            <span>144 months</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="disclaimer">
+                                        Please note that the rates and payments above are estimated based on the information you provided and are subject to change.
+                                    </p>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Add contact information and next steps for prequalification
+                    resultContainer.innerHTML += `
+                        <!-- Next Steps Card -->
+                        <div class="next-steps-card">
+                            <h3>Next Steps</h3>
+                            <p>Thank you for submitting your prequalification request. Our team will review your information and determine if you prequalify for a loan.</p>
+                            <p>If prequalified, you will receive an email with a link to complete the full application process.</p>
+                            <p>This review typically takes 1-2 business days. If you have any immediate questions, please call us at (866) 544-3463.</p>
+                            <a href="index.html" class="btn">Return to Home</a>
+                        </div>
+                    `;
+                    
+                    // Add event listener to term slider for interactive payment calculation
+                    setTimeout(() => {
+                        const termSlider = document.getElementById('term-slider');
+                        const currentTermElement = document.getElementById('current-term');
+                        const monthlyPaymentDisplay = document.getElementById('monthly-payment');
+                        
+                        if (termSlider && currentTermElement && monthlyPaymentDisplay && formData && formData['00NHs00000m08cg']) {
+                            const creditScore = formData['00NHs00000m08cg'];
+                            const amountValue = parseInt(loanAmount ? loanAmount.replace(/[^0-9]/g, '') : 0);
+                            const storedRate = calculateInterestRate(creditScore, loanAmount);
+                            
+                            termSlider.addEventListener('input', function() {
+                                const newTerm = parseInt(this.value);
+                                currentTermElement.textContent = `${newTerm} months`;
+                                
+                                // Recalculate payment based on new term
+                                if (storedRate !== null) {
+                                    const newPayment = calculateMonthlyPayment(amountValue, storedRate, newTerm);
+                                    monthlyPaymentDisplay.textContent = formatCurrency(newPayment);
+                                }
+                            });
+                        }
+                    }, 100);
+                    
+                    // Clear the localStorage after displaying results
+                    localStorage.removeItem('formSubmitted');
+                    localStorage.removeItem('prequalFormData');
+                    localStorage.removeItem('loan_amount');
+                    localStorage.removeItem('loan_purpose');
+                    
+                } else {
+                    // If no submission record found, show appropriate message
+                    resultContainer.innerHTML = `
+                        <h2>Application Status</h2>
+                        <p>We don't have a record of a recent application submission.</p>
+                        <p><a href="prequalification.html" class="btn">Return to application form</a></p>
+                    `;
+                }
+            }
+            
+            // Helper function to format currency
+            function formatCurrency(value) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2
+                }).format(value);
+            }
+            
+            // Calculate interest rate based on FICO score and loan amount
+            function calculateInterestRate(creditScore, loanAmount) {
+                const amount = parseInt(loanAmount ? loanAmount.replace(/[^0-9]/g, '') : 0);
+                const score = parseInt(creditScore);
+                
+                if (score >= 760) {
+                    if (amount < 10000) return 15.99;
+                    if (amount <= 75000) return 14.99;
+                    if (amount <= 150000) return 13.99;
+                    return 12.99;
+                } else if (score >= 720) {
+                    if (amount < 10000) return 16.99;
+                    if (amount <= 75000) return 15.99;
+                    if (amount <= 150000) return 14.99;
+                    return 13.99;
+                } else if (score >= 680) {
+                    if (amount < 10000) return 17.99;
+                    if (amount <= 75000) return 16.99;
+                    if (amount <= 150000) return 15.99;
+                    return 14.99;
+                } else if (score >= 640) {
+                    if (amount < 10000) return 18.99;
+                    if (amount <= 75000) return 17.99;
+                    return null;
+                }
+                return null;
+            }
+            
+            // Calculate monthly payment
+            function calculateMonthlyPayment(principal, annualRate, termMonths) {
+                if (!principal || isNaN(principal) || principal <= 0) return 0;
+                
+                const monthlyRate = annualRate / 100 / 12;
+                const payment = principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths) /
+                    (Math.pow(1 + monthlyRate, termMonths) - 1);
+                return Math.round(payment * 100) / 100;
+            }
+        });
+    </script>
 </body>
 </html>
