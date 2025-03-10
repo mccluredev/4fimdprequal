@@ -81,24 +81,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
     
-    if (loanAmount && !isNaN(parseInt(loanAmount))) {
-        const loanInput = document.getElementById('00NHs00000lzslH');
+ if (loanAmount && !isNaN(parseInt(loanAmount))) {
+    const loanInput = document.getElementById('00NHs00000lzslH');
+    
+    if (loanInput) {
+        // Format with proper currency symbol
+        const numericAmount = parseInt(loanAmount.replace(/[^0-9]/g, ''));
+        const formattedAmount = numericAmount.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
         
-        if (loanInput) {
-            // Format without adding currency symbol to avoid double $ signs
-            const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-            
-            loanInput.value = formattedAmount;
-            console.log("Loan amount set to:", formattedAmount);
+        // Check if the input already has the currency class
+        if (loanInput.classList.contains('currency')) {
+            // If it has currency class, it might add the $ automatically, so provide just the number
+            loanInput.value = formattedAmount.replace(/^\$/, '');
         } else {
-            console.error("Loan amount input field not found!");
+            // Otherwise provide the full formatted amount
+            loanInput.value = formattedAmount;
         }
-    } else {
-        console.log("No valid loan amount found in URL.");
+        
+        console.log("Loan amount set to:", formattedAmount);
     }
+}
     
     // Initialize autocomplete
     const addressInput = document.querySelector("#autocomplete");
@@ -435,45 +442,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("Loading screen displayed");
             }
             
-            // Store form data in localStorage for retrieval on complete page
-            const formData = new FormData(form);
-            const formDataObj = {};
-            
-            // Get loan amount and purpose for the redirect
-            const loanAmountElement = document.getElementById('00NHs00000lzslH');
-            const loanPurposeElement = document.getElementById('00NHs00000scaqg');
-            const loanAmount = loanAmountElement ? loanAmountElement.value : '';
-            const loanPurpose = loanPurposeElement ? loanPurposeElement.value : '';
-            
-            // Store loan details separately for easier access on the complete page
-            localStorage.setItem('loan_amount', loanAmount);
-            localStorage.setItem('loan_purpose', loanPurpose);
-            
-            // Store all form fields
-            for (let [key, value] of formData.entries()) {
-                formDataObj[key] = value;
-                console.log(`${key}: ${value}`);
-            }
-            
-            // Also add these values to hidden fields to pass in the form submission
-            const loanAmountParamField = document.getElementById('loan_amount_param');
-            const loanPurposeParamField = document.getElementById('loan_purpose_param');
-            
-            if (loanAmountParamField && loanAmount) {
-                loanAmountParamField.value = loanAmount;
-            }
-            
-            if (loanPurposeParamField && loanPurpose) {
-                loanPurposeParamField.value = loanPurpose;
-            }
-            
-            // Save form data to localStorage
-            try {
-                localStorage.setItem('prequalFormData', JSON.stringify(formDataObj));
-                console.log("Form data saved to localStorage");
-            } catch (e) {
-                console.error("Failed to save form data to localStorage:", e);
-            }
+      // Store form data in localStorage for retrieval on complete page
+const formData = new FormData(form);
+const formDataObj = {};
+
+// Get loan amount and purpose for the redirect
+const loanAmountElement = document.getElementById('00NHs00000lzslH');
+const loanPurposeElement = document.getElementById('00NHs00000scaqg');
+let loanAmount = '';
+const loanPurpose = loanPurposeElement ? loanPurposeElement.value : '';
+
+// Format loan amount as currency for storage
+if (loanAmountElement && loanAmountElement.value) {
+    // Extract numeric value
+    const numericAmount = parseInt(loanAmountElement.value.replace(/[^0-9]/g, ''));
+    if (!isNaN(numericAmount)) {
+        // Format as currency
+        loanAmount = numericAmount.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+    } else {
+        loanAmount = loanAmountElement.value; // Keep original value if parsing fails
+    }
+} else {
+    loanAmount = '';
+}
+
+// Store loan details separately for easier access on the complete page
+localStorage.setItem('loan_amount', loanAmount);
+localStorage.setItem('loan_purpose', loanPurpose);
+
+// Store all form fields
+for (let [key, value] of formData.entries()) {
+    formDataObj[key] = value;
+    console.log(`${key}: ${value}`);
+}
+
+// Also add these values to hidden fields to pass in the form submission
+const loanAmountParamField = document.getElementById('loan_amount_param');
+const loanPurposeParamField = document.getElementById('loan_purpose_param');
+
+if (loanAmountParamField && loanAmount) {
+    loanAmountParamField.value = loanAmount;
+}
+
+if (loanPurposeParamField && loanPurpose) {
+    loanPurposeParamField.value = loanPurpose;
+}
+
+// Save form data to localStorage
+try {
+    localStorage.setItem('prequalFormData', JSON.stringify(formDataObj));
+    console.log("Form data saved to localStorage");
+} catch (e) {
+    console.error("Failed to save form data to localStorage:", e);
+}
             
             // Ensure the form has an action URL
             if (!form.action || form.action.trim() === '') {
