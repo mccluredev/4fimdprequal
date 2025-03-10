@@ -489,8 +489,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Progress percentage:", progress + "%");
         
         // Update the progress bar width - DIRECT DOM MANIPULATION
+        // Make sure we're updating the correct element with inline style
         if (progressBar) {
-            progressBar.style.width = `${progress}%`;
+            // Apply the width directly with !important to override any CSS
+            progressBar.setAttribute('style', `width: ${progress}% !important`);
             console.log(`Setting progress bar width to ${progress}%`);
         } else {
             console.error("Progress bar element not found!");
@@ -503,10 +505,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.error("Progress text element not found!");
         }
-        
-        // Debugging - print current DOM state
-        console.log("Current progress bar width:", progressBar ? progressBar.style.width : "N/A");
-        console.log("Current progress text:", progressText ? progressText.textContent : "N/A");
     }
     
     // Form submission handler for Salesforce
