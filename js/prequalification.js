@@ -94,17 +94,20 @@ document.addEventListener('DOMContentLoaded', function() {
             maximumFractionDigits: 0
         });
         
-        // Check if the input already has the currency class
-        if (loanInput.classList.contains('currency')) {
-            // If it has currency class, it might add the $ automatically, so provide just the number
-            loanInput.value = formattedAmount.replace(/^\$/, '');
-        } else {
-            // Otherwise provide the full formatted amount
-            loanInput.value = formattedAmount;
+        // Force the dollar sign to show by setting the value directly with the $ character
+        loanInput.value = formattedAmount;
+        
+        // Ensure the dollar sign is visible - sometimes browser or CSS can hide it
+        if (!loanInput.value.includes('$')) {
+            loanInput.value = '$' + loanInput.value.replace(/^\$/, '');
         }
         
         console.log("Loan amount set to:", formattedAmount);
+    } else {
+        console.error("Loan amount input field not found!");
     }
+} else {
+    console.log("No valid loan amount found in URL.");
 }
     
     // Initialize autocomplete
@@ -457,13 +460,8 @@ if (loanAmountElement && loanAmountElement.value) {
     // Extract numeric value
     const numericAmount = parseInt(loanAmountElement.value.replace(/[^0-9]/g, ''));
     if (!isNaN(numericAmount)) {
-        // Format as currency
-        loanAmount = numericAmount.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
+        // Format as currency - force the dollar sign by prepending it
+        loanAmount = '$' + numericAmount.toLocaleString('en-US');
     } else {
         loanAmount = loanAmountElement.value; // Keep original value if parsing fails
     }
