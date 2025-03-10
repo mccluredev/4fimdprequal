@@ -467,9 +467,32 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(form);
             const formDataObj = {};
             
+            // Get loan amount and purpose for the redirect
+            const loanAmountElement = document.getElementById('00NHs00000lzslH');
+            const loanPurposeElement = document.getElementById('00NHs00000scaqg');
+            const loanAmount = loanAmountElement ? loanAmountElement.value : '';
+            const loanPurpose = loanPurposeElement ? loanPurposeElement.value : '';
+            
+            // Store loan details separately for easier access on the complete page
+            localStorage.setItem('loan_amount', loanAmount);
+            localStorage.setItem('loan_purpose', loanPurpose);
+            
+            // Store all form fields
             for (let [key, value] of formData.entries()) {
                 formDataObj[key] = value;
                 console.log(`${key}: ${value}`);
+            }
+            
+            // Also add these values to hidden fields to pass in the form submission
+            const loanAmountParamField = document.getElementById('loan_amount_param');
+            const loanPurposeParamField = document.getElementById('loan_purpose_param');
+            
+            if (loanAmountParamField && loanAmount) {
+                loanAmountParamField.value = loanAmount;
+            }
+            
+            if (loanPurposeParamField && loanPurpose) {
+                loanPurposeParamField.value = loanPurpose;
             }
             
             // Save form data to localStorage
