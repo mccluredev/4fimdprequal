@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("Script loaded and running!");
 
     // Global variable declarations
-    let currentSection = 0;
+    let currentSectionIndex = 0; // Renamed for clarity
     let isAnimating = false;
     let streetNumber = "";
     
@@ -429,8 +429,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nextSectionIndex < sections.length) {
                     sections[nextSectionIndex].classList.remove('hidden');
                     
-                    // Update global current section and progress
+                    // Update current section tracker for global state
                     currentSection = nextSectionIndex;
+                    
+                    // Update the progress bar
                     updateProgress(nextSectionIndex);
                 }
             } else {
@@ -463,8 +465,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show previous section
                 prevSection.classList.remove('hidden');
                 
-                // Update global current section and progress
+                // Update global variable for tracking
                 currentSection = prevSectionIndex;
+                
+                // Explicitly update the progress bar
                 updateProgress(prevSectionIndex);
                 
                 console.log("Moved to previous section:", prevSectionIndex);
@@ -481,17 +485,28 @@ document.addEventListener('DOMContentLoaded', function() {
         // Calculate progress as percentage
         const progress = ((index + 1) / totalSections) * 100;
         
-        // Update the progress bar width
+        console.log("Updating progress for section:", index + 1, "of", totalSections);
+        console.log("Progress percentage:", progress + "%");
+        
+        // Update the progress bar width - DIRECT DOM MANIPULATION
         if (progressBar) {
             progressBar.style.width = `${progress}%`;
             console.log(`Setting progress bar width to ${progress}%`);
+        } else {
+            console.error("Progress bar element not found!");
         }
         
         // Update the progress text
         if (progressText) {
             progressText.textContent = `Step ${index + 1} of ${totalSections}`;
             console.log(`Updating progress text to: Step ${index + 1} of ${totalSections}`);
+        } else {
+            console.error("Progress text element not found!");
         }
+        
+        // Debugging - print current DOM state
+        console.log("Current progress bar width:", progressBar ? progressBar.style.width : "N/A");
+        console.log("Current progress text:", progressText ? progressText.textContent : "N/A");
     }
     
     // Form submission handler for Salesforce
@@ -580,8 +595,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Form element not found - form submission handler not initialized");
     }
     
-    // Initialize progress
-    updateProgress();
+    // Initialize progress with the initial section (0)
+    updateProgress(0);
     
     console.log("✅ Prequalification.js fully loaded and executed.");
 });
