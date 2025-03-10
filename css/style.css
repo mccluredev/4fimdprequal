@@ -440,3 +440,156 @@ button:hover {
     color: var(--brand-grey);
     font-weight: 500;
 }
+
+/* Completion Page Specific Styles */
+.completion-page .container {
+    max-width: 1000px;
+    padding: 10px 20px;
+    margin: 20px auto;
+}
+
+/* Enhanced grid layout for summary sections */
+.completion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* Individual cards */
+.summary-card {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Make the header more compact */
+.completion-page h1 {
+    margin-bottom: 10px;
+    color: #2c5282;
+}
+
+.completion-page h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #2d3748;
+}
+
+.completion-page h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #2c5282;
+}
+
+.completion-page p {
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+/* Highlight the payment amount */
+.payment-display {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.payment-display label {
+    font-size: 14px;
+    color: #666;
+}
+
+.payment-display .amount {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2c5282;
+    margin: 10px 0;
+}
+
+/* Optimize the slider */
+.term-slider-container {
+    margin: 20px 0;
+}
+
+.term-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+    margin: 15px 0;
+}
+
+/* Remove focus outline for all browsers */
+.term-slider:focus,
+.term-slider:active,
+.term-slider:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.term-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #2c5282;
+    cursor: pointer;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+
+.term-slider::-webkit-slider-thumb:focus,
+.term-slider::-webkit-slider-thumb:active,
+.term-slider::-webkit-slider-thumb:hover {
+    outline: none !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+/* Firefox */
+.term-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #2c5282;
+    cursor: pointer;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+
+.term-slider::-moz-range-thumb:focus,
+.term-slider::-moz-range-thumb:active,
+.term-slider::-moz-range-thumb:hover {
+    outline: none !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+.term-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+#current-term {
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .completion-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .completion-page .container {
+        padding: 10px;
+    }
+}
