@@ -30,30 +30,40 @@ body {
 }
 
 /* Progress Bar */
+
+/* Ensure the progress bar container has the proper setup */
 .progress-container {
-    max-width: 600px;
-    margin: 0 auto 1.25rem;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
+/* Base styles for the progress bar background */
 .progress-bar {
+    width: 100%;
     background-color: #e0e0e0;
-    border-radius: 10px;
-    height: 20px;
+    height: 10px;
+    border-radius: 5px;
     overflow: hidden;
+    position: relative;
 }
 
+/* Styles for the filling part of the progress bar */
 .progress-bar-fill {
-    background-color: var(--brand-blue);
     height: 100%;
-    transition: width 0.5s ease;
+    background-color: #2c5282;
+    width: 25%; /* Initial width - will be updated by JavaScript */
+    border-radius: 5px;
+    transition: width 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
+/* Ensure the text is properly styled */
 .progress-text {
     text-align: center;
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-    color: var(--brand-blue);
-    font-weight: bold;
+    margin-top: 5px;
+    font-size: 14px;
 }
 
 /* Form Elements */
