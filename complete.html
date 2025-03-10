@@ -145,148 +145,7 @@
                         
                         <div class="summary-container">
                             <h3>Prequalification Summary</h3>
-                            <p><strong>Requested Loan Amount:</strong> ${loanAmount ? '
-                    
-                    // If we have credit score info, calculate and show interest rate
-                    if (formData && formData['00NHs00000m08cg']) {
-                        const creditScore = formData['00NHs00000m08cg'];
-                        const estimatedRate = calculateInterestRate(creditScore, loanAmount);
-                        
-                        if (estimatedRate !== null) {
-                            const termMonths = 60; // Default 5-year term
-                            const amountValue = parseInt(loanAmount ? loanAmount.replace(/[^0-9]/g, '') : 0);
-                            const payment = calculateMonthlyPayment(amountValue, estimatedRate, termMonths);
-                            
-                            resultContainer.innerHTML += `
-                                <div class="rate-container">
-                                    <h3>Your Estimated Offer</h3>
-                                    <p><strong>Interest Rate:</strong> ${estimatedRate}% APR</p>
-                                    <div class="payment-display">
-                                        <label>Estimated Monthly Payment:</label>
-                                        <div id="monthly-payment" class="amount">
-                                            ${payment.toLocaleString('en-US', {
-                                                style: 'currency',
-                                                currency: 'USD',
-                                                minimumFractionDigits: 2
-                                            })}
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="term-slider-container">
-                                        <label for="term-slider">Adjust Loan Term</label>
-                                        <input type="range" 
-                                               id="term-slider" 
-                                               class="term-slider" 
-                                               min="6" 
-                                               max="144" 
-                                               step="6" 
-                                               value="60">
-                                        <div class="term-labels">
-                                            <span>6 months</span>
-                                            <span id="current-term">60 months</span>
-                                            <span>144 months</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    }
-                    
-                    // Add contact information and next steps for prequalification
-                    resultContainer.innerHTML += `
-                        <div class="next-steps">
-                            <h3>Next Steps</h3>
-                            <p>Thank you for submitting your prequalification request. Our team will review your information and determine if you prequalify for a loan.</p>
-                            <p>If prequalified, you will receive an email with a link to complete the full application process.</p>
-                            <p>This review typically takes 1-2 business days. If you have any immediate questions, please call us at (555) 123-4567.</p>
-                            <a href="index.html" class="btn">Return to Home</a>
-                        </div>
-                    `;
-                    
-                    // Add event listener to term slider for interactive payment calculation
-                    setTimeout(() => {
-                        const termSlider = document.getElementById('term-slider');
-                        const currentTermElement = document.getElementById('current-term');
-                        const monthlyPaymentDisplay = document.getElementById('monthly-payment');
-                        
-                        if (termSlider && currentTermElement && monthlyPaymentDisplay) {
-                            // Store needed values
-                            const storedRate = estimatedRate;
-                            const storedAmount = amountValue;
-                            
-                            termSlider.addEventListener('input', function() {
-                                const newTerm = parseInt(this.value);
-                                currentTermElement.textContent = `${newTerm} months`;
-                                
-                                // Recalculate payment based on new term
-                                const newPayment = calculateMonthlyPayment(storedAmount, storedRate, newTerm);
-                                monthlyPaymentDisplay.textContent = newPayment.toLocaleString('en-US', {
-                                    style: 'currency',
-                                    currency: 'USD',
-                                    minimumFractionDigits: 2
-                                });
-                            });
-                        }
-                    }, 500);
-                    
-                    // Clear the localStorage after displaying results
-                    localStorage.removeItem('formSubmitted');
-                    localStorage.removeItem('prequalFormData');
-                    localStorage.removeItem('loan_amount');
-                    localStorage.removeItem('loan_purpose');
-                    
-                } else {
-                    // If no submission record found, show appropriate message
-                    resultContainer.innerHTML = `
-                        <h2>Application Status</h2>
-                        <p>We don't have a record of a recent application submission.</p>
-                        <p><a href="prequalification.html" class="btn">Return to application form</a></p>
-                    `;
-                }
-            }
-            
-            // Calculate interest rate based on FICO score and loan amount
-            function calculateInterestRate(creditScore, loanAmount) {
-                const amount = parseInt(loanAmount ? loanAmount.replace(/[^0-9]/g, '') : 0);
-                const score = parseInt(creditScore);
-                
-                if (score >= 760) {
-                    if (amount < 10000) return 15.99;
-                    if (amount <= 75000) return 14.99;
-                    if (amount <= 150000) return 13.99;
-                    return 12.99;
-                } else if (score >= 720) {
-                    if (amount < 10000) return 16.99;
-                    if (amount <= 75000) return 15.99;
-                    if (amount <= 150000) return 14.99;
-                    return 13.99;
-                } else if (score >= 680) {
-                    if (amount < 10000) return 17.99;
-                    if (amount <= 75000) return 16.99;
-                    if (amount <= 150000) return 15.99;
-                    return 14.99;
-                } else if (score >= 640) {
-                    if (amount < 10000) return 18.99;
-                    if (amount <= 75000) return 17.99;
-                    return null;
-                }
-                return null;
-            }
-            
-            // Calculate monthly payment
-            function calculateMonthlyPayment(principal, annualRate, termMonths) {
-                if (!principal || isNaN(principal) || principal <= 0) return 0;
-                
-                const monthlyRate = annualRate / 100 / 12;
-                const payment = principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths) /
-                    (Math.pow(1 + monthlyRate, termMonths) - 1);
-                return Math.round(payment * 100) / 100;
-            }
-        });
-    </script>
-</body>
-</html>
- + loanAmount : 'Not specified'}</p>
+                            <p><strong>Requested Loan Amount:</strong> ${loanAmount ? '$' + loanAmount : 'Not specified'}</p>
                             <p><strong>Loan Purpose:</strong> ${purpose || 'Not specified'}</p>
                             <p>Please note that the rates and payments shown below are estimates based on the information provided.</p>
                         </div>
@@ -309,11 +168,7 @@
                                     <div class="payment-display">
                                         <label>Estimated Monthly Payment:</label>
                                         <div id="monthly-payment" class="amount">
-                                            ${payment.toLocaleString('en-US', {
-                                                style: 'currency',
-                                                currency: 'USD',
-                                                minimumFractionDigits: 2
-                                            })}
+                                            ${formatCurrency(payment)}
                                         </div>
                                     </div>
                                     
@@ -334,6 +189,28 @@
                                     </div>
                                 </div>
                             `;
+                            
+                            // Add event listener to term slider for interactive payment calculation
+                            setTimeout(() => {
+                                const termSlider = document.getElementById('term-slider');
+                                const currentTermElement = document.getElementById('current-term');
+                                const monthlyPaymentDisplay = document.getElementById('monthly-payment');
+                                
+                                if (termSlider && currentTermElement && monthlyPaymentDisplay) {
+                                    // Store needed values
+                                    const storedRate = estimatedRate;
+                                    const storedAmount = amountValue;
+                                    
+                                    termSlider.addEventListener('input', function() {
+                                        const newTerm = parseInt(this.value);
+                                        currentTermElement.textContent = `${newTerm} months`;
+                                        
+                                        // Recalculate payment based on new term
+                                        const newPayment = calculateMonthlyPayment(storedAmount, storedRate, newTerm);
+                                        monthlyPaymentDisplay.textContent = formatCurrency(newPayment);
+                                    });
+                                }
+                            }, 500);
                         }
                     }
                     
@@ -347,32 +224,6 @@
                             <a href="index.html" class="btn">Return to Home</a>
                         </div>
                     `;
-                    
-                    // Add event listener to term slider for interactive payment calculation
-                    setTimeout(() => {
-                        const termSlider = document.getElementById('term-slider');
-                        const currentTermElement = document.getElementById('current-term');
-                        const monthlyPaymentDisplay = document.getElementById('monthly-payment');
-                        
-                        if (termSlider && currentTermElement && monthlyPaymentDisplay) {
-                            // Store needed values
-                            const storedRate = estimatedRate;
-                            const storedAmount = amountValue;
-                            
-                            termSlider.addEventListener('input', function() {
-                                const newTerm = parseInt(this.value);
-                                currentTermElement.textContent = `${newTerm} months`;
-                                
-                                // Recalculate payment based on new term
-                                const newPayment = calculateMonthlyPayment(storedAmount, storedRate, newTerm);
-                                monthlyPaymentDisplay.textContent = newPayment.toLocaleString('en-US', {
-                                    style: 'currency',
-                                    currency: 'USD',
-                                    minimumFractionDigits: 2
-                                });
-                            });
-                        }
-                    }, 500);
                     
                     // Clear the localStorage after displaying results
                     localStorage.removeItem('formSubmitted');
@@ -388,6 +239,15 @@
                         <p><a href="prequalification.html" class="btn">Return to application form</a></p>
                     `;
                 }
+            }
+            
+            // Helper function to format currency
+            function formatCurrency(value) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2
+                }).format(value);
             }
             
             // Calculate interest rate based on FICO score and loan amount
