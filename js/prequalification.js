@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Form found, setting up submission handler", form);
         console.log("Form action:", form.action);
         
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             console.log("Form submission started");
             
@@ -463,88 +463,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("Loading screen displayed");
             }
             
-            try {
-                // Log form data for debugging (remove in production)
-                const formData = new FormData(form);
-                console.log("Form data being submitted:");
-                for (let [key, value] of formData.entries()) {
-                    console.log(`${key}: ${value}`);
-                }
-                
-                // Ensure the form has an action URL
-                if (!form.action || form.action.trim() === '') {
-                    throw new Error('Form is missing action URL');
-                }
-                
-                // Submit to Salesforce
-                console.log("Submitting to:", form.action);
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json, text/plain, */*'
-                    }
-                });
-                
-                console.log("Response status:", response.status);
-                
-                if (!response.ok) {
-                    // Try to get more details from the response
-                    let errorDetails;
-                    try {
-                        errorDetails = await response.text();
-                    } catch (e) {
-                        errorDetails = "No additional error details available";
-                    }
-                    
-                    console.error("Form submission error details:", errorDetails);
-                    throw new Error(`Form submission failed with status ${response.status}`);
-                }
-                
-                console.log("Form submitted successfully");
-                
-                // After successful submission, show calculator
-                sections.forEach(section => section.classList.add('hidden'));
-                if (paymentCalculator) {
-                    paymentCalculator.classList.remove('hidden');
-                    updatePaymentCalculator();
-                    console.log("Payment calculator displayed");
-                } else {
-                    console.warn("Payment calculator element not found");
-                }
-                
-                if (progressText && progressBar) {
-                    progressText.textContent = 'Estimate Complete';
-                    progressBar.style.width = '100%';
-                    console.log("Progress indicators updated to complete");
-                }
-                
-                // If loan purpose was selected, redirect to complete page
-                const loanPurposeElement = document.getElementById('00NHs00000scaqg');
-                if (loanPurposeElement && loanPurposeElement.value && loanAmount) {
-                    console.log("Preparing to redirect to complete page");
-                    const selectedPurpose = loanPurposeElement.value;
-                    const redirectUrl = `complete.html?amount=${encodeURIComponent(loanAmount)}&purpose=${encodeURIComponent(selectedPurpose)}`;
-                    
-                    console.log("Redirecting to:", redirectUrl);
-                    setTimeout(() => {
-                        window.location.href = redirectUrl;
-                    }, 2000); // Short delay to show the success state before redirecting
-                } else {
-                    // Update URL without redirecting if no purpose selected
-                    window.history.pushState({}, '', 'prequalification.html?showCalculator=true');
-                    console.log("URL updated without redirect");
-                }
-                
-            } catch (error) {
-                console.error('Submission error:', error);
-                alert('There was an error submitting your application: ' + error.message + '. Please try again.');
-            } finally {
-                if (loadingScreen) {
-                    loadingScreen.classList.add('hidden');
-                    console.log("Loading screen hidden");
-                }
+            // Store form data in localStorage for retrieval on complete page
+            const formData = new FormData(form);
+            const formDataObj = {};
+            
+            for (let [key, value] of formData.entries()) {
+                formDataObj[key] = value;
+                console.log(`${key}: ${value}`);
             }
+            
+            // Save form data to localStorage
+            try {
+                localStorage.setItem('prequalFormData', JSON.stringify(formDataObj));
+                console.log("Form data saved to localStorage");
+            } catch (e) {
+                console.error("Failed to save form data to localStorage:", e);
+            }
+            
+            // Ensure the form has an action URL
+            if (!form.action || form.action.trim() === '') {
+                alert('Form is missing action URL');
+                if (loadingScreen) loadingScreen.classList.add('hidden');
+                return;
+            }
+            
+            // Instead of using fetch, submit the form directly
+            console.log("Submitting form traditionally to:", form.action);
+            
+            // Set a flag in localStorage to indicate form was submitted
+            localStorage.setItem('formSubmitted', 'true');
+            
+            // Submit the form traditionally
+            form.submit();
         });
     } else {
         console.error("Form element not found - form submission handler not initialized");
