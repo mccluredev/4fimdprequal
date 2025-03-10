@@ -594,38 +594,14 @@ button:hover {
     }
 }
 
-/* Add these styles to your style.css file */
-
-/* Only fix the input box and $ sign alignment */
-.input-group {
-    position: relative;
-    margin-bottom: 1rem;
-}
-
-.input-group input {
-    padding-left: 2.5rem; /* More space for the $ symbol */
-}
-
-/* Make the loan amount input specifically larger */
-#loan-amount {
-    height: 60px; /* Taller input box */
-    font-size: 1.25rem; /* Larger font size */
-    line-height: 1.2;
-    border-radius: 0.5rem; /* Slightly more rounded corners */
-}
-
-/* Fix the currency symbol alignment */
 .currency-symbol {
     position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--brand-grey);
-    font-weight: 500;
-    font-size: 1.25rem; /* Larger $ symbol to match text */
-    line-height: 1;
-    pointer-events: none; /* Ensures clicks pass through to the input */
+    left: 0.75rem;
     display: flex;
     align-items: center;
+    height: 100%;
+    color: var(--brand-grey);
+    font-weight: 500;
+    pointer-events: none;
 }
 
