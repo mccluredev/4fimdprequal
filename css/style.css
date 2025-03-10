@@ -596,19 +596,25 @@ button:hover {
 
 /* Add these styles to your style.css file */
 
-/* Improved Input Group with properly aligned currency symbol */
+/* Only fix the input box and $ sign alignment */
 .input-group {
     position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .input-group input {
-    padding-left: 2.5rem; /* More space for the larger $ symbol */
-    height: 60px; /* Taller input */
-    font-size: 1.25rem; /* Larger font */
-    font-weight: 500; /* Slightly bolder text */
+    padding-left: 2.5rem; /* More space for the $ symbol */
 }
 
+/* Make the loan amount input specifically larger */
+#loan-amount {
+    height: 60px; /* Taller input box */
+    font-size: 1.25rem; /* Larger font size */
+    line-height: 1.2;
+    border-radius: 0.5rem; /* Slightly more rounded corners */
+}
+
+/* Fix the currency symbol alignment */
 .currency-symbol {
     position: absolute;
     left: 1rem;
@@ -616,28 +622,10 @@ button:hover {
     transform: translateY(-50%);
     color: var(--brand-grey);
     font-weight: 500;
-    font-size: 1.25rem; /* Larger $ symbol */
+    font-size: 1.25rem; /* Larger $ symbol to match text */
     line-height: 1;
     pointer-events: none; /* Ensures clicks pass through to the input */
+    display: flex;
+    align-items: center;
 }
 
-/* Specific styling for the loan amount input */
-#loan-amount {
-    height: 60px; /* Taller input box */
-    font-size: 1.25rem; /* Larger font size */
-    line-height: 1.2;
-    padding: 0.75rem 1rem 0.75rem 2.5rem; /* More padding */
-    border-radius: 0.5rem; /* Slightly more rounded corners */
-}
-
-/* Make the loan widget a bit more spacious */
-.loan-widget {
-    padding: 50px; /* More padding around the widget */
-}
-
-/* Adjust the button to match the new input size */
-.apply-button {
-    padding: 18px 30px; /* Taller button */
-    font-size: 20px; /* Larger text */
-    border-radius: 0.5rem; /* Match the input's border radius */
-}
