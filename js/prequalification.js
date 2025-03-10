@@ -63,18 +63,28 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("No valid loan amount found in URL.");
     }
     
-    // Initialize autocomplete (correct ID format)
+    // Initialize autocomplete (fix selector - remove # since we're using querySelector)
     const addressInput = document.querySelector("#autocomplete");
+    console.log("Address input found:", addressInput ? "Yes" : "No");
     
     // Handle Google Maps initialization
     function initializeGooglePlaces() {
+        // Try to find the input again in case it wasn't available earlier
+        const addressInput = document.getElementById("autocomplete");
+        
         if (!addressInput) {
-            console.error("❌ Error: Address input field not found.");
+            console.error("❌ Error: Address input field not found. Make sure element with ID 'autocomplete' exists.");
             return;
         }
         
         try {
-            const autocomplete = new google.maps.places.Autocomplete(addressInput);
+            // Use specific options for the autocomplete
+            const options = {
+                types: ['address'],
+                componentRestrictions: { country: 'us' }
+            };
+            
+            const autocomplete = new google.maps.places.Autocomplete(addressInput, options);
             console.log("✅ Autocomplete initialized:", autocomplete);
             
             if (autocomplete && typeof google.maps.event.addListener === "function") {
@@ -151,15 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Second event listener for redirecting to complete page
-        // NOTE: Be careful with this - it will redirect immediately when purpose changes
-        loanPurpose.addEventListener('change', function() {
-            const selectedPurpose = this.value;
-            if (selectedPurpose) {
-                const updatedURL = `complete.html?amount=${loanAmount}&purpose=${encodeURIComponent(selectedPurpose)}`;
-                window.location.href = updatedURL;
-            }
-        });
+        // We're removing the immediate redirect on loan purpose change
+        // The redirect should happen only after form completion
     }
     
     // Handle business established selection
@@ -404,72 +407,147 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to go to the next section
     function goToNextSection(currentSection) {
         const nextSection = currentSection.nextElementSibling;
-        if (nextSection) {
+        if (nextSection && nextSection.classList.contains('section')) {
             currentSection.classList.add('hidden');
             nextSection.classList.remove('hidden');
+            
+            // Find the index of the next section to update progress
+            const allSections = Array.from(sections);
+            const nextIndex = allSections.indexOf(nextSection);
+            if (nextIndex !== -1) {
+                currentSection = nextIndex;
+                updateProgress(nextIndex);
+            }
         }
     }
     
     // Progress bar update
-    function updateProgress() {
-        const progress = ((currentSection + 1) / 4) * 100;
-        progressBar.style.width = `${progress}%`;
-        progressText.textContent = `Step ${currentSection + 1} of 4`;
+    function updateProgress(sectionIndex) {
+        // Use passed index or current global index
+        const index = typeof sectionIndex !== 'undefined' ? sectionIndex : currentSection;
+        const totalSections = sections.length;
+        
+        // Calculate progress as percentage
+        const progress = ((index + 1) / totalSections) * 100;
+        
+        // Update the progress bar width
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+            console.log(`Setting progress bar width to ${progress}%`);
+        }
+        
+        // Update the progress text
+        if (progressText) {
+            progressText.textContent = `Step ${index + 1} of ${totalSections}`;
+            console.log(`Updating progress text to: Step ${index + 1} of ${totalSections}`);
+        }
     }
     
     // Form submission handler for Salesforce
     if (form) {
+        console.log("Form found, setting up submission handler", form);
+        console.log("Form action:", form.action);
+        
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
+            console.log("Form submission started");
             
             const visibleSection = [...sections].find(section => !section.classList.contains('hidden'));
-            if (!validateSection(visibleSection)) return;
+            if (!validateSection(visibleSection)) {
+                console.error("Validation failed, stopping submission");
+                return;
+            }
             
             if (loadingScreen) {
                 loadingScreen.classList.remove('hidden');
+                console.log("Loading screen displayed");
             }
             
             try {
-                // Submit to Salesforce first
-                await new Promise((resolve, reject) => {
-                    const formData = new FormData(form);
-                    fetch(form.action, {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Form submission failed');
-                        }
-                        resolve();
-                    })
-                    .catch(error => reject(error));
+                // Log form data for debugging (remove in production)
+                const formData = new FormData(form);
+                console.log("Form data being submitted:");
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+                
+                // Ensure the form has an action URL
+                if (!form.action || form.action.trim() === '') {
+                    throw new Error('Form is missing action URL');
+                }
+                
+                // Submit to Salesforce
+                console.log("Submitting to:", form.action);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json, text/plain, */*'
+                    }
                 });
+                
+                console.log("Response status:", response.status);
+                
+                if (!response.ok) {
+                    // Try to get more details from the response
+                    let errorDetails;
+                    try {
+                        errorDetails = await response.text();
+                    } catch (e) {
+                        errorDetails = "No additional error details available";
+                    }
+                    
+                    console.error("Form submission error details:", errorDetails);
+                    throw new Error(`Form submission failed with status ${response.status}`);
+                }
+                
+                console.log("Form submitted successfully");
                 
                 // After successful submission, show calculator
                 sections.forEach(section => section.classList.add('hidden'));
                 if (paymentCalculator) {
                     paymentCalculator.classList.remove('hidden');
                     updatePaymentCalculator();
+                    console.log("Payment calculator displayed");
+                } else {
+                    console.warn("Payment calculator element not found");
                 }
                 
                 if (progressText && progressBar) {
                     progressText.textContent = 'Estimate Complete';
                     progressBar.style.width = '100%';
+                    console.log("Progress indicators updated to complete");
                 }
                 
-                // Update URL without redirecting
-                window.history.pushState({}, '', 'prequalification.html?showCalculator=true');
+                // If loan purpose was selected, redirect to complete page
+                const loanPurposeElement = document.getElementById('00NHs00000scaqg');
+                if (loanPurposeElement && loanPurposeElement.value && loanAmount) {
+                    console.log("Preparing to redirect to complete page");
+                    const selectedPurpose = loanPurposeElement.value;
+                    const redirectUrl = `complete.html?amount=${encodeURIComponent(loanAmount)}&purpose=${encodeURIComponent(selectedPurpose)}`;
+                    
+                    console.log("Redirecting to:", redirectUrl);
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 2000); // Short delay to show the success state before redirecting
+                } else {
+                    // Update URL without redirecting if no purpose selected
+                    window.history.pushState({}, '', 'prequalification.html?showCalculator=true');
+                    console.log("URL updated without redirect");
+                }
                 
             } catch (error) {
                 console.error('Submission error:', error);
-                alert('There was an error submitting your application. Please try again.');
+                alert('There was an error submitting your application: ' + error.message + '. Please try again.');
             } finally {
                 if (loadingScreen) {
                     loadingScreen.classList.add('hidden');
+                    console.log("Loading screen hidden");
                 }
             }
         });
+    } else {
+        console.error("Form element not found - form submission handler not initialized");
     }
     
     // Initialize progress
