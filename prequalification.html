@@ -20,7 +20,8 @@
 
     <form id="prequalForm" action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8" method="POST">
         <input type="hidden" name="oid" value="00DHs000003XeKL">
-        <input type="hidden" name="retURL" value="http://4fimd.com">
+        <!-- Updated retURL to point to your complete.html page with the submitted flag -->
+        <input type="hidden" name="retURL" value="https://mccluredev.github.io/4fimdprequal/complete.html?submitted=true">
         <input type="hidden" name="lead_source" value="Web to Lead">
 
 
@@ -182,6 +183,10 @@
                 <input type="hidden" id="city" name="city">
                 <input type="hidden" id="state" name="state">
                 <input type="hidden" id="zip" name="zip">
+
+                <!-- Preserve loan info in hidden fields for the completion page -->
+                <input type="hidden" id="loan_amount_param" name="loan_amount_param">
+                <input type="hidden" id="loan_purpose_param" name="loan_purpose_param">
 
                 <div class="button-container">
                     <button type="button" class="back-button">Back</button>
