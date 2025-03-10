@@ -46,10 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const loanInput = document.getElementById('00NHs00000lzslH');
         
         if (loanInput) {
-            // Format and set the loan amount for display
+            // Format without adding currency symbol to avoid double $ signs
             const formattedAmount = parseInt(loanAmount.replace(/[^0-9]/g, '')).toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             });
@@ -160,9 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 otherPurposeText.value = '';
             }
         });
-        
-        // We're removing the immediate redirect on loan purpose change
-        // The redirect should happen only after form completion
     }
     
     // Handle business established selection
@@ -352,79 +347,135 @@ document.addEventListener('DOMContentLoaded', function() {
         termSlider.addEventListener('input', updatePaymentCalculator);
     }
     
-    // Navigation with animations
-    async function slideSection(direction) {
-        if (isAnimating) return;
-        isAnimating = true;
-        
-        const currentSect = sections[currentSection];
-        const nextSection = sections[currentSection + direction];
-        
-        nextSection.classList.remove('hidden');
-        nextSection.classList.add(direction > 0 ? 'slide-enter' : 'slide-back-enter');
-        
-        void nextSection.offsetWidth;
-        
-        currentSect.classList.add(direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active');
-        nextSection.classList.add(direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active');
-        
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        currentSect.classList.add('hidden');
-        currentSect.classList.remove(direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active');
-        nextSection.classList.remove(
-            direction > 0 ? 'slide-enter' : 'slide-back-enter',
-            direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active'
-        );
-        
-        currentSection += direction;
-        updateProgress();
-        isAnimating = false;
+    // Function to determine the current visible section
+    function getCurrentVisibleSection() {
+        return [...sections].findIndex(section => !section.classList.contains('hidden'));
     }
     
-    // Add navigation button listeners
+    // Navigation with animations
+    function goToSection(targetSectionIndex) {
+        if (isAnimating) return;
+        
+        const currentSectionIndex = getCurrentVisibleSection();
+        if (currentSectionIndex === -1 || targetSectionIndex < 0 || targetSectionIndex >= sections.length) {
+            console.error("Invalid section navigation:", currentSectionIndex, "to", targetSectionIndex);
+            return;
+        }
+        
+        isAnimating = true;
+        
+        const currentSection = sections[currentSectionIndex];
+        const targetSection = sections[targetSectionIndex];
+        const direction = targetSectionIndex > currentSectionIndex ? 1 : -1;
+        
+        // Prepare the animation
+        targetSection.classList.remove('hidden');
+        targetSection.classList.add(direction > 0 ? 'slide-enter' : 'slide-back-enter');
+        
+        // Force reflow to ensure CSS transitions work
+        void targetSection.offsetWidth;
+        
+        // Start the animation
+        currentSection.classList.add(direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active');
+        targetSection.classList.add(direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active');
+        
+        // Update the global current section
+        currentSection = targetSectionIndex;
+        
+        // Wait for animation to complete
+        setTimeout(() => {
+            // Hide the previous section
+            currentSection.classList.add('hidden');
+            
+            // Remove animation classes
+            currentSection.classList.remove(
+                direction > 0 ? 'slide-exit-active' : 'slide-back-exit-active'
+            );
+            targetSection.classList.remove(
+                direction > 0 ? 'slide-enter' : 'slide-back-enter',
+                direction > 0 ? 'slide-enter-active' : 'slide-back-enter-active'
+            );
+            
+            // Update progress
+            updateProgress(targetSectionIndex);
+            
+            // Release animation lock
+            isAnimating = false;
+        }, 500);
+    }
+    
+    // Add navigation button listeners - NEXT buttons
     document.querySelectorAll('.next-button').forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
             console.log("Next button clicked!");
             
-            const currentSection = [...sections].find(section => !section.classList.contains('hidden'));
-            
-            if (!currentSection) {
+            const currentSectionIndex = getCurrentVisibleSection();
+            if (currentSectionIndex === -1) {
                 console.error("No visible section found!");
                 return;
             }
             
+            const currentSection = sections[currentSectionIndex];
+            
             if (validateSection(currentSection)) {
                 console.log("Validation passed, moving to next section...");
-                goToNextSection(currentSection);
+                
+                // Hide current section
+                currentSection.classList.add('hidden');
+                
+                // Show next section
+                const nextSectionIndex = currentSectionIndex + 1;
+                if (nextSectionIndex < sections.length) {
+                    sections[nextSectionIndex].classList.remove('hidden');
+                    
+                    // Update global current section and progress
+                    currentSection = nextSectionIndex;
+                    updateProgress(nextSectionIndex);
+                }
             } else {
                 console.error("Validation failed. Check required fields.");
             }
         });
     });
     
-    // Function to go to the next section
-    function goToNextSection(currentSection) {
-        const nextSection = currentSection.nextElementSibling;
-        if (nextSection && nextSection.classList.contains('section')) {
-            currentSection.classList.add('hidden');
-            nextSection.classList.remove('hidden');
+    // Add navigation button listeners - BACK buttons (FIXED)
+    document.querySelectorAll('.back-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log("Back button clicked!");
             
-            // Find the index of the next section to update progress
-            const allSections = Array.from(sections);
-            const nextIndex = allSections.indexOf(nextSection);
-            if (nextIndex !== -1) {
-                currentSection = nextIndex;
-                updateProgress(nextIndex);
+            const currentSectionIndex = getCurrentVisibleSection();
+            if (currentSectionIndex === -1) {
+                console.error("No visible section found!");
+                return;
             }
-        }
-    }
+            
+            // Only proceed if not on the first section
+            if (currentSectionIndex > 0) {
+                const currentSection = sections[currentSectionIndex];
+                const prevSectionIndex = currentSectionIndex - 1;
+                const prevSection = sections[prevSectionIndex];
+                
+                // Hide current section
+                currentSection.classList.add('hidden');
+                
+                // Show previous section
+                prevSection.classList.remove('hidden');
+                
+                // Update global current section and progress
+                currentSection = prevSectionIndex;
+                updateProgress(prevSectionIndex);
+                
+                console.log("Moved to previous section:", prevSectionIndex);
+            }
+        });
+    });
     
     // Progress bar update
     function updateProgress(sectionIndex) {
         // Use passed index or current global index
-        const index = typeof sectionIndex !== 'undefined' ? sectionIndex : currentSection;
+        const index = typeof sectionIndex !== 'undefined' ? sectionIndex : getCurrentVisibleSection();
         const totalSections = sections.length;
         
         // Calculate progress as percentage
@@ -452,7 +503,13 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             console.log("Form submission started");
             
-            const visibleSection = [...sections].find(section => !section.classList.contains('hidden'));
+            const visibleSectionIndex = getCurrentVisibleSection();
+            if (visibleSectionIndex === -1) {
+                console.error("No visible section found!");
+                return;
+            }
+            
+            const visibleSection = sections[visibleSectionIndex];
             if (!validateSection(visibleSection)) {
                 console.error("Validation failed, stopping submission");
                 return;
