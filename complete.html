@@ -246,120 +246,119 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("Complete page loaded");
-            
-            // Hide loading element
-            const loadingElement = document.getElementById('loading-element');
-            if (loadingElement) {
-                loadingElement.style.display = 'none';
+    console.log("Complete page loaded");
+    
+    // Hide loading element
+    const loadingElement = document.getElementById('loading-element');
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+    }
+    
+    // Get URL parameters and data
+    const urlParams = new URLSearchParams(window.location.search);
+    const loanAmount = urlParams.get('amount') || localStorage.getItem('loan_amount') || '$0';
+    const purpose = urlParams.get('purpose') || localStorage.getItem('loan_purpose') || 'Not specified';
+    
+    // Update the display with the retrieved values
+    document.getElementById('display-loan-amount').textContent = loanAmount;
+    document.getElementById('display-loan-purpose').textContent = purpose;
+    
+    // Get credit score and calculate rate (if available)
+    let creditScore = 720; // Default to a reasonable score if not available
+    let formData;
+    
+    try {
+        const storedData = localStorage.getItem('prequalFormData');
+        if (storedData) {
+            formData = JSON.parse(storedData);
+            if (formData && formData['00NHs00000m08cg']) {
+                creditScore = formData['00NHs00000m08cg'];
             }
-            
-            // Get URL parameters and data
-            const urlParams = new URLSearchParams(window.location.search);
-            const loanAmount = urlParams.get('amount') || localStorage.getItem('loan_amount') || '$0';
-            const purpose = urlParams.get('purpose') || localStorage.getItem('loan_purpose') || 'Not specified';
-            
-            // Update the display with the retrieved values
-            document.getElementById('display-loan-amount').textContent = loanAmount;
-            document.getElementById('display-loan-purpose').textContent = purpose;
-            
-            // Get credit score and calculate rate (if available)
-            let creditScore = 720; // Default to a reasonable score if not available
-            let formData;
-            
-            try {
-                const storedData = localStorage.getItem('prequalFormData');
-                if (storedData) {
-                    formData = JSON.parse(storedData);
-                    if (formData && formData['00NHs00000m08cg']) {
-                        creditScore = formData['00NHs00000m08cg'];
-                    }
-                }
-            } catch (e) {
-                console.error("Error retrieving form data:", e);
-            }
-            
-            // Calculate the rate
-            const estimatedRate = calculateInterestRate(creditScore, loanAmount);
-            document.getElementById('display-interest-rate').textContent = estimatedRate !== null ? estimatedRate : '0.00';
-            
-            // Calculate initial payment
-            if (estimatedRate !== null) {
-                const amountValue = parseInt(loanAmount.replace(/[^0-9]/g, ''));
-                const initialTerm = 60; // Default 5-year term
-                const payment = calculateMonthlyPayment(amountValue, estimatedRate, initialTerm);
-                document.getElementById('monthly-payment').textContent = formatCurrency(payment);
+        }
+    } catch (e) {
+        console.error("Error retrieving form data:", e);
+    }
+    
+    // Calculate the rate
+    const estimatedRate = calculateInterestRate(creditScore, loanAmount);
+    
+    // Calculate initial payment
+    if (estimatedRate !== null) {
+        const amountValue = parseInt(loanAmount.replace(/[^0-9]/g, ''));
+        const initialTerm = 60; // Default 5-year term
+        const payment = calculateMonthlyPayment(amountValue, estimatedRate, initialTerm);
+        document.getElementById('monthly-payment').textContent = formatCurrency(payment);
+        
+        // Set up slider
+        const termSlider = document.getElementById('term-slider');
+        const currentTermElement = document.getElementById('current-term');
+        const monthlyPaymentDisplay = document.getElementById('monthly-payment');
+        
+        if (termSlider && currentTermElement && monthlyPaymentDisplay) {
+            termSlider.addEventListener('input', function() {
+                const newTerm = parseInt(this.value);
+                currentTermElement.textContent = `${newTerm} months`;
                 
-                // Set up slider
-                const termSlider = document.getElementById('term-slider');
-                const currentTermElement = document.getElementById('current-term');
-                const monthlyPaymentDisplay = document.getElementById('monthly-payment');
-                
-                if (termSlider && currentTermElement && monthlyPaymentDisplay) {
-                    termSlider.addEventListener('input', function() {
-                        const newTerm = parseInt(this.value);
-                        currentTermElement.textContent = `${newTerm} months`;
-                        
-                        // Recalculate payment based on new term
-                        const newPayment = calculateMonthlyPayment(amountValue, estimatedRate, newTerm);
-                        monthlyPaymentDisplay.textContent = formatCurrency(newPayment);
-                    });
-                }
-            }
-            
-            // Clean up localStorage
-            localStorage.removeItem('formSubmitted');
-            localStorage.removeItem('prequalFormData');
-            localStorage.removeItem('loan_amount');
-            localStorage.removeItem('loan_purpose');
-            
-            // Helper function to format currency
-            function formatCurrency(value) {
-                return new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2
-                }).format(value);
-            }
-            
-            // Calculate interest rate based on FICO score and loan amount
-            function calculateInterestRate(creditScore, loanAmount) {
-                const amount = parseInt(loanAmount ? loanAmount.replace(/[^0-9]/g, '') : 0);
-                const score = parseInt(creditScore);
-                
-                if (score >= 760) {
-                    if (amount < 10000) return 15.99;
-                    if (amount <= 75000) return 14.99;
-                    if (amount <= 150000) return 13.99;
-                    return 12.99;
-                } else if (score >= 720) {
-                    if (amount < 10000) return 16.99;
-                    if (amount <= 75000) return 15.99;
-                    if (amount <= 150000) return 14.99;
-                    return 13.99;
-                } else if (score >= 680) {
-                    if (amount < 10000) return 17.99;
-                    if (amount <= 75000) return 16.99;
-                    if (amount <= 150000) return 15.99;
-                    return 14.99;
-                } else if (score >= 640) {
-                    if (amount < 10000) return 18.99;
-                    if (amount <= 75000) return 17.99;
-                    return null;
-                }
-                return null;
-            }
-            
-            // Calculate monthly payment
-            function calculateMonthlyPayment(principal, annualRate, termMonths) {
-                if (!principal || isNaN(principal) || principal <= 0) return 0;
-                
-                const monthlyRate = annualRate / 100 / 12;
-                const payment = principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths) /
-                    (Math.pow(1 + monthlyRate, termMonths) - 1);
-                return Math.round(payment * 100) / 100;
-            }
-        });
+                // Recalculate payment based on new term
+                const newPayment = calculateMonthlyPayment(amountValue, estimatedRate, newTerm);
+                monthlyPaymentDisplay.textContent = formatCurrency(newPayment);
+            });
+        }
+    }
+    
+    // Clean up localStorage
+    localStorage.removeItem('formSubmitted');
+    localStorage.removeItem('prequalFormData');
+    localStorage.removeItem('loan_amount');
+    localStorage.removeItem('loan_purpose');
+    
+    // Helper function to format currency
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        }).format(value);
+    }
+    
+    // Calculate interest rate based on FICO score and loan amount
+    function calculateInterestRate(creditScore, loanAmount) {
+        const amount = parseInt(loanAmount ? loanAmount.replace(/[^0-9]/g, '') : 0);
+        const score = parseInt(creditScore);
+        
+        if (score >= 760) {
+            if (amount < 10000) return 15.99;
+            if (amount <= 75000) return 14.99;
+            if (amount <= 150000) return 13.99;
+            return 12.99;
+        } else if (score >= 720) {
+            if (amount < 10000) return 16.99;
+            if (amount <= 75000) return 15.99;
+            if (amount <= 150000) return 14.99;
+            return 13.99;
+        } else if (score >= 680) {
+            if (amount < 10000) return 17.99;
+            if (amount <= 75000) return 16.99;
+            if (amount <= 150000) return 15.99;
+            return 14.99;
+        } else if (score >= 640) {
+            if (amount < 10000) return 18.99;
+            if (amount <= 75000) return 17.99;
+            return null;
+        }
+        return null;
+    }
+    
+    // Calculate monthly payment
+    function calculateMonthlyPayment(principal, annualRate, termMonths) {
+        if (!principal || isNaN(principal) || principal <= 0) return 0;
+        
+        const monthlyRate = annualRate / 100 / 12;
+        const payment = principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths) /
+            (Math.pow(1 + monthlyRate, termMonths) - 1);
+        return Math.round(payment * 100) / 100;
+    }
+});
     </script>
 </body>
 </html>
