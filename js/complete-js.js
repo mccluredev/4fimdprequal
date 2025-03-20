@@ -205,23 +205,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const score = parseInt(creditScore);
 
             if (score >= 760) {
+                if (amount < 10000) return 14.99;
+                if (amount <= 75000) return 13.99;
+                if (amount <= 150000) return 12.99;
+                return 12.99;
+            } else if (score >= 720) {
                 if (amount < 10000) return 15.99;
                 if (amount <= 75000) return 14.99;
                 if (amount <= 150000) return 13.99;
-                return 12.99;
-            } else if (score >= 720) {
+                return 13.99;
+            } else if (score >= 680) {
                 if (amount < 10000) return 16.99;
                 if (amount <= 75000) return 15.99;
                 if (amount <= 150000) return 14.99;
-                return 13.99;
-            } else if (score >= 680) {
-                if (amount < 10000) return 17.99;
-                if (amount <= 75000) return 16.99;
-                if (amount <= 150000) return 15.99;
                 return 14.99;
             } else if (score >= 640) {
-                if (amount < 10000) return 18.99;
-                if (amount <= 75000) return 17.99;
+                if (amount < 10000) return 17.99;
+                if (amount <= 75000) return 16.99;
                 return null; // Not eligible for higher amounts
             }
             return null; // Not eligible
