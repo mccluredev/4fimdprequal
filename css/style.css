@@ -266,24 +266,10 @@ button:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.widget-title {
-    font-size: 28px;
-    margin: 0 0 20px 0;
-    text-align: center;
-    font-weight: 600;
-}
-
-.widget-subtitle {
-    font-size: 16px;
-    margin: 0 0 30px 0;
-    text-align: center;
-    opacity: 0.9;
-}
-
 .apply-button {
     background-color: var(--brand-yellow);
     color: var(--brand-blue-dark);
-    width: 100%;
+    width: auto;
     padding: 15px 30px;
     font-size: 18px;
     font-weight: bold;
