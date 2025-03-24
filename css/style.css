@@ -266,10 +266,11 @@ button:hover {
 }
 
 .apply-button {
-    background-color: var(--brand-yellow);
-    color: var(--brand-blue-dark);
+    background-color: #4B6EF5;
+    color: white;
     width: auto;
     padding: 15px 30px;
+    border-radius: 8px;
     font-size: 18px;
     font-weight: bold;
     margin: 0; 
@@ -278,7 +279,7 @@ button:hover {
 }
 
 .apply-button:hover {
-    background-color: #e6b800;
+    background-color: #3a5ad0;
     transform: translateY(-2px);
 }
 
