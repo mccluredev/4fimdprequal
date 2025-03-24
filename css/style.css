@@ -274,6 +274,7 @@ button:hover {
     margin: 0; 
     height: 48px; 
     line-height: 1;
+}
 
 .apply-button:hover {
     background-color: #e6b800;
@@ -625,12 +626,13 @@ button:hover {
     align-items: center;
     gap: 10px;
     width: 100%;
-    max-width: 600px; /* adjust as needed */
+    max-width: 600px;
 }
 
 #loan-widget-form .input-group {
     flex: 1;
     margin-right: 10px;
+    margin-bottom: 0; /* Override the general margin */
 }
 
 #loan-widget-form .apply-button {
@@ -640,4 +642,7 @@ button:hover {
     padding: 12px 24px;
     height: 48px;
     line-height: 1;
+    background-color: var(--brand-yellow);
+    color: var(--brand-blue-dark);
+    font-weight: bold;
 }
