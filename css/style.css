@@ -617,3 +617,27 @@ button:hover {
         margin-bottom: 10px;
     }
 }
+
+    /* More specific selector to override any conflicting styles */
+#loan-widget-form .form-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 600px; /* adjust as needed */
+}
+
+#loan-widget-form .input-group {
+    flex: 1;
+    margin-right: 10px;
+}
+
+#loan-widget-form .apply-button {
+    width: auto;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 12px 24px;
+    height: 48px;
+    line-height: 1;
+}
