@@ -430,6 +430,8 @@ button:hover {
 
 .input-group input {
     padding-left: 2rem;
+    height: auto;  
+    line-height: normal;  
 }
 
 .currency-symbol {
@@ -439,6 +441,8 @@ button:hover {
     transform: translateY(-50%);
     color: var(--brand-grey);
     font-weight: 500;
+    pointer-events: none;
+    line-height: 1;  
 }
 
 /* Completion Page Specific Styles */
