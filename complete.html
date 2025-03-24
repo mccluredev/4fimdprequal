@@ -245,8 +245,32 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+   document.addEventListener('DOMContentLoaded', function() {
     console.log("Complete page loaded");
+    
+    // Calculate the valid term range based on loan amount
+    function calculateTermRange(loanAmount) {
+        // Default values
+        let minTerm = 6;
+        let maxTerm = 144;
+        
+        // Apply business rules based on loan amount
+        if (loanAmount <= 10000) {
+            minTerm = 6;
+            maxTerm = 48; // Up to 4 years
+        } else if (loanAmount <= 75000) {
+            minTerm = 36; // 3 years
+            maxTerm = 120; // 10 years
+        } else if (loanAmount <= 150000) {
+            minTerm = 60; // 5 years
+            maxTerm = 144; // 12 years
+        } else {
+            minTerm = 84; // 7 years
+            maxTerm = 144; // 12 years
+        }
+        
+        return { minTerm, maxTerm };
+    }
     
     // Hide loading element
     const loadingElement = document.getElementById('loading-element');
@@ -285,16 +309,42 @@
     // Calculate initial payment
     if (estimatedRate !== null) {
         const amountValue = parseInt(loanAmount.replace(/[^0-9]/g, ''));
-        const initialTerm = 60; // Default 5-year term
-        const payment = calculateMonthlyPayment(amountValue, estimatedRate, initialTerm);
-        document.getElementById('monthly-payment').textContent = formatCurrency(payment);
         
-        // Set up slider
+        // Set up slider with appropriate term range
         const termSlider = document.getElementById('term-slider');
         const currentTermElement = document.getElementById('current-term');
         const monthlyPaymentDisplay = document.getElementById('monthly-payment');
+        const termLabels = document.querySelector('.term-labels');
         
         if (termSlider && currentTermElement && monthlyPaymentDisplay) {
+            // Calculate and set appropriate term range based on loan amount
+            const { minTerm, maxTerm } = calculateTermRange(amountValue);
+            
+            // Update slider attributes
+            termSlider.min = minTerm;
+            termSlider.max = maxTerm;
+            
+            // Set initial value to min term if outside of valid range
+            const initialTerm = parseInt(termSlider.value);
+            if (initialTerm < minTerm || initialTerm > maxTerm) {
+                termSlider.value = minTerm;
+            }
+            
+            // Update term labels
+            if (termLabels) {
+                const spans = termLabels.querySelectorAll('span');
+                if (spans.length >= 3) {
+                    spans[0].textContent = `${minTerm} months`;
+                    spans[2].textContent = `${maxTerm} months`;
+                    currentTermElement.textContent = `${termSlider.value} months`;
+                }
+            }
+            
+            // Calculate initial payment
+            const payment = calculateMonthlyPayment(amountValue, estimatedRate, parseInt(termSlider.value));
+            monthlyPaymentDisplay.textContent = formatCurrency(payment);
+            
+            // Add event listener for slider changes
             termSlider.addEventListener('input', function() {
                 const newTerm = parseInt(this.value);
                 currentTermElement.textContent = `${newTerm} months`;
