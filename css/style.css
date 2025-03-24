@@ -602,3 +602,32 @@ button:hover {
         padding: 10px;
     }
 }
+
+
+/* Form row for side-by-side layout */
+.form-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Input group (already exists but may need this update) */
+.input-group {
+    position: relative;
+    flex: 1;
+}
+
+/* Responsive adjustment for mobile */
+@media (max-width: 640px) {
+    .form-row {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .input-group, .apply-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
