@@ -77,38 +77,90 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize with first section
     showSection(0);
     
+    // NEW FUNCTION: Calculate the valid term range based on loan amount
+    function calculateTermRange(loanAmount) {
+        // Default values
+        let minTerm = 6;
+        let maxTerm = 144;
+        
+        // Apply business rules based on loan amount
+        if (loanAmount <= 10000) {
+            minTerm = 6;
+            maxTerm = 48; // Up to 4 years
+        } else if (loanAmount <= 75000) {
+            minTerm = 36; // 3 years
+            maxTerm = 120; // 10 years
+        } else if (loanAmount <= 150000) {
+            minTerm = 60; // 5 years
+            maxTerm = 144; // 12 years
+        } else {
+            minTerm = 84; // 7 years
+            maxTerm = 144; // 12 years
+        }
+        
+        return { minTerm, maxTerm };
+    }
+    
     // Check for loan amount in URL and populate field
     const urlParams = new URLSearchParams(window.location.search);
     const loanAmount = urlParams.get('amount');
+    let numericLoanAmount = 0;
     
- if (loanAmount && !isNaN(parseInt(loanAmount))) {
-    const loanInput = document.getElementById('00NHs00000lzslH');
-    
-    if (loanInput) {
-        // Format with proper currency symbol
-        const numericAmount = parseInt(loanAmount.replace(/[^0-9]/g, ''));
-        const formattedAmount = numericAmount.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
+    if (loanAmount && !isNaN(parseInt(loanAmount))) {
+        const loanInput = document.getElementById('00NHs00000lzslH');
         
-        // Force the dollar sign to show by setting the value directly with the $ character
-        loanInput.value = formattedAmount;
-        
-        // Ensure the dollar sign is visible - sometimes browser or CSS can hide it
-        if (!loanInput.value.includes('$')) {
-            loanInput.value = '$' + loanInput.value.replace(/^\$/, '');
+        if (loanInput) {
+            // Format with proper currency symbol
+            numericLoanAmount = parseInt(loanAmount.replace(/[^0-9]/g, ''));
+            const formattedAmount = numericLoanAmount.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            // Force the dollar sign to show by setting the value directly with the $ character
+            loanInput.value = formattedAmount;
+            
+            // Ensure the dollar sign is visible - sometimes browser or CSS can hide it
+            if (!loanInput.value.includes('$')) {
+                loanInput.value = '$' + loanInput.value.replace(/^\$/, '');
+            }
+            
+            console.log("Loan amount set to:", formattedAmount);
+            
+            // Update term slider range based on loan amount
+            const termSlider = document.getElementById('term-slider');
+            if (termSlider) {
+                const { minTerm, maxTerm } = calculateTermRange(numericLoanAmount);
+                termSlider.min = minTerm;
+                termSlider.max = maxTerm;
+                
+                // Set initial value to minimum term if current value is out of bounds
+                const currentValue = parseInt(termSlider.value);
+                if (currentValue < minTerm || currentValue > maxTerm) {
+                    termSlider.value = minTerm;
+                }
+                
+                // Update term labels
+                const termLabels = document.querySelector('.term-labels');
+                if (termLabels) {
+                    const spans = termLabels.querySelectorAll('span');
+                    if (spans.length >= 3) {
+                        spans[0].textContent = `${minTerm} months`;
+                        spans[2].textContent = `${maxTerm} months`;
+                        spans[1].textContent = `${termSlider.value} months`;
+                    }
+                }
+                
+                console.log(`Term slider updated: min=${minTerm}, max=${maxTerm}`);
+            }
+        } else {
+            console.error("Loan amount input field not found!");
         }
-        
-        console.log("Loan amount set to:", formattedAmount);
     } else {
-        console.error("Loan amount input field not found!");
+        console.log("No valid loan amount found in URL.");
     }
-} else {
-    console.log("No valid loan amount found in URL.");
-}
     
     // Initialize autocomplete
     const addressInput = document.querySelector("#autocomplete");
@@ -374,6 +426,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const amount = parseInt(loanAmount.replace(/[^0-9]/g, ''));
         const rate = calculateInterestRate(creditScore, loanAmount);
         
+        // Update the term slider range based on loan amount
+        const { minTerm, maxTerm } = calculateTermRange(amount);
+        termSlider.min = minTerm;
+        termSlider.max = maxTerm;
+        
+        // Adjust the value if it's outside the new range
+        if (parseInt(termSlider.value) < minTerm) {
+            termSlider.value = minTerm;
+        } else if (parseInt(termSlider.value) > maxTerm) {
+            termSlider.value = maxTerm;
+        }
+        
+        // Update term labels
+        const termLabels = document.querySelector('.term-labels');
+        if (termLabels) {
+            const spans = termLabels.querySelectorAll('span');
+            if (spans.length >= 3) {
+                spans[0].textContent = `${minTerm} months`;
+                spans[2].textContent = `${maxTerm} months`;
+                spans[1].textContent = `${termSlider.value} months`;
+            }
+        }
+        
         if (rate === null) {
             rateText.textContent = "Based on the provided information, please contact us for rate details.";
             monthlyPaymentDisplay.textContent = "Contact us for details";
@@ -393,7 +468,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add term slider event listener
     const termSlider = document.getElementById('term-slider');
     if (termSlider) {
-        termSlider.addEventListener('input', updatePaymentCalculator);
+        termSlider.addEventListener('input', function() {
+            const currentTermElement = document.getElementById('current-term');
+            if (currentTermElement) {
+                currentTermElement.textContent = `${this.value} months`;
+            }
+            updatePaymentCalculator();
+        });
     }
     
     // Set up navigation buttons - NEXT buttons
@@ -406,6 +487,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (validateSection(currentSection)) {
                 console.log("Validation passed, moving to next section...");
+                
+                // If moving to the payment calculator section, update it first
+                if (currentSectionIndex === 3) {
+                    updatePaymentCalculator();
+                }
+                
                 showSection(currentSectionIndex + 1);
             } else {
                 console.error("Validation failed. Check required fields.");
@@ -445,59 +532,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("Loading screen displayed");
             }
             
-      // Store form data in localStorage for retrieval on complete page
-const formData = new FormData(form);
-const formDataObj = {};
-
-// Get loan amount and purpose for the redirect
-const loanAmountElement = document.getElementById('00NHs00000lzslH');
-const loanPurposeElement = document.getElementById('00NHs00000scaqg');
-let loanAmount = '';
-const loanPurpose = loanPurposeElement ? loanPurposeElement.value : '';
-
-// Format loan amount as currency for storage
-if (loanAmountElement && loanAmountElement.value) {
-    // Extract numeric value
-    const numericAmount = parseInt(loanAmountElement.value.replace(/[^0-9]/g, ''));
-    if (!isNaN(numericAmount)) {
-        // Format as currency - force the dollar sign by prepending it
-        loanAmount = '$' + numericAmount.toLocaleString('en-US');
-    } else {
-        loanAmount = loanAmountElement.value; // Keep original value if parsing fails
-    }
-} else {
-    loanAmount = '';
-}
-
-// Store loan details separately for easier access on the complete page
-localStorage.setItem('loan_amount', loanAmount);
-localStorage.setItem('loan_purpose', loanPurpose);
-
-// Store all form fields
-for (let [key, value] of formData.entries()) {
-    formDataObj[key] = value;
-    console.log(`${key}: ${value}`);
-}
-
-// Also add these values to hidden fields to pass in the form submission
-const loanAmountParamField = document.getElementById('loan_amount_param');
-const loanPurposeParamField = document.getElementById('loan_purpose_param');
-
-if (loanAmountParamField && loanAmount) {
-    loanAmountParamField.value = loanAmount;
-}
-
-if (loanPurposeParamField && loanPurpose) {
-    loanPurposeParamField.value = loanPurpose;
-}
-
-// Save form data to localStorage
-try {
-    localStorage.setItem('prequalFormData', JSON.stringify(formDataObj));
-    console.log("Form data saved to localStorage");
-} catch (e) {
-    console.error("Failed to save form data to localStorage:", e);
-}
+            // Store form data in localStorage for retrieval on complete page
+            const formData = new FormData(form);
+            const formDataObj = {};
+            
+            // Get loan amount and purpose for the redirect
+            const loanAmountElement = document.getElementById('00NHs00000lzslH');
+            const loanPurposeElement = document.getElementById('00NHs00000scaqg');
+            let loanAmount = '';
+            const loanPurpose = loanPurposeElement ? loanPurposeElement.value : '';
+            
+            // Format loan amount as currency for storage
+            if (loanAmountElement && loanAmountElement.value) {
+                // Extract numeric value
+                const numericAmount = parseInt(loanAmountElement.value.replace(/[^0-9]/g, ''));
+                if (!isNaN(numericAmount)) {
+                    // Format as currency - force the dollar sign by prepending it
+                    loanAmount = '$' + numericAmount.toLocaleString('en-US');
+                } else {
+                    loanAmount = loanAmountElement.value; // Keep original value if parsing fails
+                }
+            } else {
+                loanAmount = '';
+            }
+            
+            // Store loan details separately for easier access on the complete page
+            localStorage.setItem('loan_amount', loanAmount);
+            localStorage.setItem('loan_purpose', loanPurpose);
+            
+            // Store all form fields
+            for (let [key, value] of formData.entries()) {
+                formDataObj[key] = value;
+                console.log(`${key}: ${value}`);
+            }
+            
+            // Also add these values to hidden fields to pass in the form submission
+            const loanAmountParamField = document.getElementById('loan_amount_param');
+            const loanPurposeParamField = document.getElementById('loan_purpose_param');
+            
+            if (loanAmountParamField && loanAmount) {
+                loanAmountParamField.value = loanAmount;
+            }
+            
+            if (loanPurposeParamField && loanPurpose) {
+                loanPurposeParamField.value = loanPurpose;
+            }
+            
+            // Save form data to localStorage
+            try {
+                localStorage.setItem('prequalFormData', JSON.stringify(formDataObj));
+                console.log("Form data saved to localStorage");
+            } catch (e) {
+                console.error("Failed to save form data to localStorage:", e);
+            }
             
             // Ensure the form has an action URL
             if (!form.action || form.action.trim() === '') {
