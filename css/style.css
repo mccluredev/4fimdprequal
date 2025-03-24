@@ -442,7 +442,13 @@ button:hover {
     color: var(--brand-grey);
     font-weight: 500;
     pointer-events: none;
-    line-height: 1;  
+    line-height: 1;
+}
+
+.loan-amount {
+    padding-left: 2rem !important;
+    width: 100%;
+    height: auto;
 }
 
 /* Completion Page Specific Styles */
@@ -597,15 +603,3 @@ button:hover {
         padding: 10px;
     }
 }
-
-.currency-symbol {
-    position: absolute;
-    left: 0.75rem;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    color: var(--brand-grey);
-    font-weight: 500;
-    pointer-events: none;
-}
-
