@@ -99,6 +99,7 @@ textarea {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    margin-bottom: 1rem;
 }
 
 /* Style select dropdown arrow */
@@ -416,7 +417,8 @@ button:hover {
 .input-group input {
     padding-left: 2rem;
     height: auto;  
-    line-height: normal;  
+    line-height: normal;
+    margin-bottom: 0;
 }
 
 .currency-symbol {
