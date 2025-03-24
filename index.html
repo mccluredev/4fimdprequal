@@ -3,85 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly Payment Calculator</title>
+    <title>Medical Professional Loans</title>
     <link rel="stylesheet" href="css/style.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize variables
-            const form = document.getElementById('loan-widget-form');
-            const amountInput = document.getElementById('loan-amount');
-            const errorMessage = document.getElementById('amount-error');
-
-            function formatCurrency(value) {
-                return value.replace(/[^0-9]/g, '');
-            }
-
-            function validateAmount(amount) {
-                const value = parseInt(formatCurrency(amount));
-                return value >= 1000 && value <= 1000000;
-            }
-
-            amountInput.addEventListener('input', function(e) {
-                let value = formatCurrency(e.target.value);
-                if (value) {
-                    value = parseInt(value).toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0
-                    });
-                    value = value.replace('$', ''); // Remove $ since we have it in a span
-                    e.target.value = value;
-                }
-                
-                if (errorMessage) {
-                    errorMessage.style.display = 'none';
-                }
-            });
-
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                
-                const loanAmount = amountInput.value;
-                
-                if (!validateAmount(loanAmount)) {
-                    if (errorMessage) {
-                        errorMessage.style.display = 'block';
-                    }
-                    return;
-                }
-                
-                // Extract numeric value for the URL
-                const numericAmount = formatCurrency(loanAmount);
-                
-                // Redirect to prequalification with the amount parameter
-                window.location.href = `prequalification.html?amount=${numericAmount}`;
-            });
-        });
-    </script>
 </head>
 <body>
-    <div class="loan-form-container">
-        <form id="loan-widget-form" action="prequalification.html" method="GET" class="loan-form-inline">
-            <div class="loan-form-controls">
-                <div class="loan-input-group">
-                    <span class="loan-currency-symbol">$</span>
+    <div class="loan-widget">
+        <form id="loan-widget-form" action="prequalification.html" method="GET">
+            <div class="form-row">
+                <div class="input-group">
+                    <span class="currency-symbol">$</span>
                     <input type="text" 
-                           class="loan-amount-input" 
+                           class="loan-amount" 
                            id="loan-amount"
                            name="amount"
                            placeholder="Enter loan amount"
                            autocomplete="off"
                            required>
                 </div>
-                <button type="submit" class="loan-apply-button">Apply Now</button>
+                <button type="submit" class="apply-button">Apply Now</button>
             </div>
-            <div class="loan-error-message" id="amount-error">
+            <div class="error-message" id="amount-error">
                 Please enter an amount between $1,000 and $1,000,000
             </div>
         </form>
     </div>
-    
     <script src="js/index.js"></script>
 </body>
 </html>
